@@ -21,6 +21,8 @@ Object.assign(plugin.configs, {
       },
       rules: {
         "tailwind-variants/limited-inline-classname": "error",
+        "tailwind-variants/require-variants-call-styles-name": "error",
+        "tailwind-variants/require-variants-suffix": "error",
       },
     },
   ] satisfies Linter.ConfigType,
