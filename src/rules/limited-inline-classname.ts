@@ -72,7 +72,7 @@ function validateExpression(
       ) {
         context.report({
           messageId: MESSAGE_IDS.noCnInClassName,
-          node: expr,
+          node: node as TSESTree.Node,
         });
         return true;
       }
