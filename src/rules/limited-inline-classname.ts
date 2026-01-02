@@ -53,9 +53,11 @@ function validateExpression(
 
   switch (expr.type) {
     case AST_NODE_TYPES.ArrayExpression:
-      return expr.elements.some((el) =>
-        validateExpression(node, el, context, maxInlineClasses)
-      );
+      return expr.elements
+        .filter((el): el is TSESTree.Expression => {
+          return el !== null && el.type !== AST_NODE_TYPES.SpreadElement;
+        })
+        .some((el) => validateExpression(node, el, context, maxInlineClasses));
 
     case AST_NODE_TYPES.BinaryExpression:
       return (
@@ -74,10 +76,14 @@ function validateExpression(
         });
         return true;
       }
-      // Also recurse into arguments of cn()
-      return expr.arguments.some((arg) =>
-        validateExpression(node, arg, context, maxInlineClasses)
-      );
+
+      return expr.arguments
+        .filter((arg): arg is TSESTree.Expression => {
+          return arg.type !== AST_NODE_TYPES.SpreadElement;
+        })
+        .some((arg) =>
+          validateExpression(node, arg, context, maxInlineClasses)
+        );
 
     case AST_NODE_TYPES.ConditionalExpression:
       return (
@@ -112,11 +118,16 @@ function validateExpression(
         if (prop.type === AST_NODE_TYPES.Property) {
           return validateExpression(
             node,
-            prop.value,
+            prop.value &&
+              prop.value.type !== "ObjectPattern" &&
+              prop.value.type !== "ArrayPattern"
+              ? (prop.value as TSESTree.Expression | VueAST.ESLintExpression)
+              : null,
             context,
             maxInlineClasses
           );
         }
+        // Ignore SpreadElement and other non-Property types
         return false;
       });
 
