@@ -8,8 +8,7 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["test"],
       "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen",
-      "cwd": "${workspaceFolder}"
+      "internalConsoleOptions": "neverOpen"
     }
   ]
 }
