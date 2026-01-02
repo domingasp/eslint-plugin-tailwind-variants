@@ -1,14 +1,15 @@
 import { Linter } from "@typescript-eslint/utils/ts-eslint";
+
 import { rules } from "./rules/index.js";
 
 const plugin = {
-  meta: {
-    name: "eslint-plugin-tailwind-variants",
-    version: "0.1.0",
-    namespace: "tailwind-variants",
-  },
   // Plugin type expects Config rather than ConfigType
   configs: {} as Record<string, Linter.Config>,
+  meta: {
+    name: "eslint-plugin-tailwind-variants",
+    namespace: "tailwind-variants",
+    version: "0.1.0",
+  },
   rules,
 } satisfies Linter.Plugin;
 

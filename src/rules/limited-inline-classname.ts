@@ -3,8 +3,9 @@ import {
   ESLintUtils,
   TSESTree,
 } from "@typescript-eslint/utils";
-import { RuleContext } from "@typescript-eslint/utils/ts-eslint";
-import { AST, AST as VueAST } from "vue-eslint-parser";
+import { RuleContext, RuleListener } from "@typescript-eslint/utils/ts-eslint";
+import { AST as VueAST } from "vue-eslint-parser";
+
 import { createRuleVisitors } from "../utils/create-rule-visitors";
 import { getBindClassExpression } from "../utils/get-bind-class-expression";
 
@@ -37,60 +38,23 @@ function countClasses(value: string) {
 
 /** Recursively validate classes in any expression and detect cn() calls */
 function validateExpression(
-  node: any,
-  expr: any,
+  node: TSESTree.Node | VueAST.VAttribute,
+  expr:
+    | null
+    | TSESTree.Node
+    | TSESTree.PrivateIdentifier
+    | VueAST.ESLintExpression
+    | VueAST.ESLintPrivateIdentifier
+    | VueAST.VAttribute,
   context: RuleContext<MessageIds, Options>,
   maxInlineClasses = 5
 ): boolean {
   if (!expr) return false;
 
   switch (expr.type) {
-    case AST_NODE_TYPES.Literal:
-      if (typeof expr.value === "string") {
-        if (countClasses(expr.value) > maxInlineClasses) {
-          context.report({
-            node,
-            messageId: MESSAGE_IDS.limitedInlineClassName,
-            data: { max: maxInlineClasses.toString() },
-          });
-          return true;
-        }
-      }
-      return false;
-
-    case AST_NODE_TYPES.TemplateLiteral:
-      // Static template literal
-      if (expr.expressions.length === 0) {
-        const raw = expr.quasis[0]?.value.cooked ?? "";
-        if (countClasses(raw) > maxInlineClasses) {
-          context.report({
-            node,
-            messageId: MESSAGE_IDS.limitedInlineClassName,
-            data: { max: maxInlineClasses.toString() },
-          });
-          return true;
-        }
-      }
-      // Recurse into expressions
-      return expr.expressions.some((e: unknown) =>
-        validateExpression(node, e, context, maxInlineClasses)
-      );
-
     case AST_NODE_TYPES.ArrayExpression:
-      return expr.elements.some((el: any) =>
+      return expr.elements.some((el) =>
         validateExpression(node, el, context, maxInlineClasses)
-      );
-
-    case AST_NODE_TYPES.ConditionalExpression:
-      return (
-        validateExpression(node, expr.consequent, context, maxInlineClasses) ||
-        validateExpression(node, expr.alternate, context, maxInlineClasses)
-      );
-
-    case AST_NODE_TYPES.LogicalExpression:
-      return (
-        validateExpression(node, expr.left, context, maxInlineClasses) ||
-        validateExpression(node, expr.right, context, maxInlineClasses)
       );
 
     case AST_NODE_TYPES.BinaryExpression:
@@ -105,15 +69,74 @@ function validateExpression(
         expr.callee.name === "cn"
       ) {
         context.report({
-          node: expr,
           messageId: MESSAGE_IDS.noCnInClassName,
+          node: expr,
         });
         return true;
       }
       // Also recurse into arguments of cn()
-      return expr.arguments.some((arg: any) =>
+      return expr.arguments.some((arg) =>
         validateExpression(node, arg, context, maxInlineClasses)
       );
+
+    case AST_NODE_TYPES.ConditionalExpression:
+      return (
+        validateExpression(node, expr.consequent, context, maxInlineClasses) ||
+        validateExpression(node, expr.alternate, context, maxInlineClasses)
+      );
+
+    case AST_NODE_TYPES.Literal:
+      if (typeof expr.value === "string") {
+        if (countClasses(expr.value) > maxInlineClasses) {
+          context.report({
+            data: { max: maxInlineClasses.toString() },
+            messageId: MESSAGE_IDS.limitedInlineClassName,
+            node: node as TSESTree.Node,
+          });
+          return true;
+        }
+      }
+      return false;
+
+    case AST_NODE_TYPES.LogicalExpression:
+      return (
+        validateExpression(node, expr.left, context, maxInlineClasses) ||
+        validateExpression(node, expr.right, context, maxInlineClasses)
+      );
+
+    case AST_NODE_TYPES.ObjectExpression:
+      return expr.properties.some((prop) => {
+        if (prop.type === AST_NODE_TYPES.Property) {
+          return validateExpression(
+            node,
+            prop.value,
+            context,
+            maxInlineClasses
+          );
+        }
+        return false;
+      });
+
+    case AST_NODE_TYPES.TemplateLiteral:
+      // Static template literal
+      if (expr.expressions.length === 0) {
+        const raw = expr.quasis[0]?.value.cooked ?? "";
+        if (countClasses(raw) > maxInlineClasses) {
+          context.report({
+            data: { max: maxInlineClasses.toString() },
+            messageId: MESSAGE_IDS.limitedInlineClassName,
+            node: node as TSESTree.Node,
+          });
+          return true;
+        }
+      }
+      // Recurse into expressions
+      return expr.expressions.some((el) =>
+        validateExpression(node, el, context, maxInlineClasses)
+      );
+
+    case AST_NODE_TYPES.ThisExpression:
+      return false;
 
     default:
       console.log("Unhandled expression type:", expr.type);
@@ -122,6 +145,43 @@ function validateExpression(
 }
 
 export const rule = createRule<Options, MessageIds>({
+  name: "limited-inline-classname",
+  meta: {
+    docs: {
+      description: `Allow a configurable number of inline class names; require use of tailwind-variants.`,
+    },
+    messages: {
+      limitedInlineClassName: `Inline className may contain at most {{max}} class. Use tailwind-variants instead.`,
+      noCnInClassName:
+        "Using cn() in className is not allowed in component definition. Use tailwind-variants instead.",
+    },
+    schema: [
+      {
+        additionalProperties: false,
+        properties: {
+          directoryPattern: {
+            description: 'Directory pattern to match, e.g., "/components/".',
+            type: "string",
+          },
+          maxInlineClasses: {
+            default: 5,
+            description:
+              "Maximum number of inline classes allowed (default: 5).",
+            minimum: 1,
+            type: "number",
+          },
+        },
+        type: "object",
+      },
+    ],
+    type: "problem",
+  },
+  defaultOptions: [
+    {
+      directoryPattern: "/components/",
+      maxInlineClasses: 5,
+    },
+  ],
   create: (context) => {
     const options = context.options[0] || {};
     const directoryPattern = options.directoryPattern || "/components/";
@@ -134,11 +194,12 @@ export const rule = createRule<Options, MessageIds>({
     }
 
     // Script visitors (for JSX in Vue <script> or React files)
-    const scriptVisitor = {
-      JSXAttribute(node: TSESTree.JSXAttribute) {
-        if (node.name.name !== "className") return;
+    const scriptVisitor: RuleListener = {
+      JSXAttribute(node: unknown) {
+        const jsxAttr = node as TSESTree.JSXAttribute;
+        if (jsxAttr.name.name !== "className") return;
 
-        const value = node.value;
+        const value = jsxAttr.value;
         if (!value) return;
 
         // className="..."
@@ -148,9 +209,9 @@ export const rule = createRule<Options, MessageIds>({
         ) {
           if (countClasses(value.value) > maxInlineClasses) {
             context.report({
-              node,
-              messageId: MESSAGE_IDS.limitedInlineClassName,
               data: { max: maxInlineClasses.toString() },
+              messageId: MESSAGE_IDS.limitedInlineClassName,
+              node: jsxAttr,
             });
             return;
           }
@@ -158,81 +219,50 @@ export const rule = createRule<Options, MessageIds>({
 
         // className={`...`} / className={"..."}
         if (value.type === AST_NODE_TYPES.JSXExpressionContainer) {
-          validateExpression(node, value.expression, context, maxInlineClasses);
+          const expr = value.expression;
+          if (expr.type !== AST_NODE_TYPES.JSXEmptyExpression) {
+            validateExpression(jsxAttr, expr, context, maxInlineClasses);
+          }
         }
       },
     };
 
     // Template visitors (for Vue <template>)
-    const templateVisitor = {
-      VAttribute(node: VueAST.VAttribute) {
-        if (!node.value) return;
+    const templateVisitor: RuleListener = {
+      VAttribute(node: unknown) {
+        const vAttr = node as VueAST.VAttribute;
+        if (!vAttr.value) return;
 
         // class="..."
         if (
-          !node.directive &&
-          node.key.type === "VIdentifier" &&
-          node.key.name === "class"
+          !vAttr.directive &&
+          vAttr.key.type === "VIdentifier" &&
+          vAttr.key.name === "class"
         ) {
-          if (countClasses(node.value.value) > maxInlineClasses) {
+          if (countClasses(vAttr.value.value) > maxInlineClasses) {
             context.report({
-              node: node as never,
-              messageId: MESSAGE_IDS.limitedInlineClassName,
               data: { max: maxInlineClasses.toString() },
+              messageId: MESSAGE_IDS.limitedInlineClassName,
+              node: vAttr as never,
             });
           }
         }
 
-        const container = getBindClassExpression(node);
+        const container = getBindClassExpression(vAttr);
         if (!container) return;
 
         // :class="..." / v-bind:class
-        validateExpression(
-          node,
-          container.expression,
-          context,
-          maxInlineClasses
-        );
+        if (container.expression) {
+          validateExpression(
+            vAttr,
+            container.expression as VueAST.ESLintExpression,
+            context,
+            maxInlineClasses
+          );
+        }
       },
     };
 
     return createRuleVisitors(context, templateVisitor, scriptVisitor);
   },
-  defaultOptions: [
-    {
-      directoryPattern: "/components/",
-      maxInlineClasses: 5,
-    },
-  ],
-  meta: {
-    docs: {
-      description: `Allow a configurable number of inline class names; require use of tailwind-variants.`,
-    },
-    messages: {
-      limitedInlineClassName: `Inline className may contain at most {{max}} class. Use tailwind-variants instead.`,
-      noCnInClassName:
-        "Using cn() in className is not allowed in component definition. Use tailwind-variants instead.",
-    },
-    schema: [
-      {
-        type: "object",
-        properties: {
-          directoryPattern: {
-            type: "string",
-            description: 'Directory pattern to match, e.g., "/components/".',
-          },
-          maxInlineClasses: {
-            type: "number",
-            description:
-              "Maximum number of inline classes allowed (default: 5).",
-            minimum: 1,
-            default: 5,
-          },
-        },
-        additionalProperties: false,
-      },
-    ],
-    type: "problem",
-  },
-  name: "limited-inline-classname",
 });
