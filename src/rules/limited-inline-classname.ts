@@ -85,6 +85,9 @@ function validateExpression(
         validateExpression(node, expr.alternate, context, maxInlineClasses)
       );
 
+    case AST_NODE_TYPES.Identifier:
+      return false;
+
     case AST_NODE_TYPES.Literal:
       if (typeof expr.value === "string") {
         if (countClasses(expr.value) > maxInlineClasses) {
