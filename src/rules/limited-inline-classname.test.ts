@@ -3,150 +3,148 @@ import {
   RuleTester as TSRuleTester,
   ValidTestCase,
 } from "@typescript-eslint/rule-tester";
+import vueParser from "vue-eslint-parser";
+
 import { MESSAGE_IDS, rule } from "./limited-inline-classname.js";
 
 const tester = new TSRuleTester();
 
 const classes = {
-  SIX: "bg-red-500 text-white p-2 m-1 rounded border",
   FIVE: "bg-red-500 text-white p-2 m-1 rounded",
   FOUR: "bg-red-500 text-white p-2 m-1",
   SINGLE: "bg-red-500",
+  SIX: "bg-red-500 text-white p-2 m-1 rounded border",
 } as const;
 
-const vueParser = {
-  languageOptions: { parser: require("vue-eslint-parser") },
+const vueParserConfig = {
+  languageOptions: { parser: vueParser },
 };
-
-type TestCase =
-  | ValidTestCase<readonly unknown[]>
-  | InvalidTestCase<string, readonly unknown[]>;
 
 // #region Valid Test Cases
 const valid: ValidTestCase<readonly unknown[]>[] = [
   // Vue: static class with acceptable number of classes
   {
-    name: "Vue: class with 5 classes",
     code: `<template><div class="${classes.FIVE}"></div></template>`,
     filename: "/components/Button.vue",
-    ...vueParser,
+    name: "Vue: class with 5 classes",
+    ...vueParserConfig,
   },
   {
-    name: "Vue: class with 4 classes",
     code: `<template><div class="${classes.FOUR}"></div></template>`,
     filename: "/components/Button.vue",
-    ...vueParser,
+    name: "Vue: class with 4 classes",
+    ...vueParserConfig,
   },
   {
-    name: "Vue: class with 1 class",
     code: `<template><div class="${classes.SINGLE}"></div></template>`,
     filename: "/components/Button.vue",
-    ...vueParser,
+    name: "Vue: class with 1 class",
+    ...vueParserConfig,
   },
   {
-    name: "Vue: empty class",
     code: `<template><div class=""></div></template>`,
     filename: "/components/Button.vue",
-    ...vueParser,
+    name: "Vue: empty class",
+    ...vueParserConfig,
   },
 
   // Vue: dynamic class with acceptable number of classes
   {
-    name: "Vue: :class with 5 classes (string literal)",
     code: `<template><div :class="'${classes.FIVE}'"></div></template>`,
     filename: "/components/Button.vue",
-    ...vueParser,
+    name: "Vue: :class with 5 classes (string literal)",
+    ...vueParserConfig,
   },
   {
-    name: "Vue: :class with 5 classes (template literal)",
     code: `<template><div :class="\`${classes.FIVE}\`"></div></template>`,
     filename: "/components/Button.vue",
-    ...vueParser,
+    name: "Vue: :class with 5 classes (template literal)",
+    ...vueParserConfig,
   },
   {
-    name: "Vue: :class variable reference",
     code: `<template><div :class="buttonVariants"></div></template>`,
     filename: "/components/Button.vue",
-    ...vueParser,
+    name: "Vue: :class variable reference",
+    ...vueParserConfig,
   },
   {
-    name: "Vue: :class array with acceptable class count",
     code: `<template><div :class="['${classes.FOUR}', '${classes.SINGLE}']"></div></template>`,
     filename: "/components/Button.vue",
-    ...vueParser,
+    name: "Vue: :class array with acceptable class count",
+    ...vueParserConfig,
   },
 
   // JSX: static class with acceptable number of classes
   {
-    name: "JSX: className with 5 classes",
     code: `const element = <div className="${classes.FIVE}"></div>;`,
     filename: "/components/Button.tsx",
+    name: "JSX: className with 5 classes",
   },
   {
-    name: "JSX: className with 4 classes",
     code: `const element = <div className="${classes.FOUR}"></div>;`,
     filename: "/components/Button.tsx",
+    name: "JSX: className with 4 classes",
   },
   {
-    name: "JSX: className with 1 class",
     code: `const element = <div className="${classes.SINGLE}"></div>;`,
     filename: "/components/Button.tsx",
+    name: "JSX: className with 1 class",
   },
   {
-    name: "JSX: empty className",
     code: `const element = <div className=""></div>;`,
     filename: "/components/Button.tsx",
+    name: "JSX: empty className",
   },
 
   // JSX: Dynamic className with acceptable number of classes
   {
-    name: "JSX: className with 5 classes (string literal)",
     code: `const element = <div className={'${classes.FIVE}'}></div>;`,
     filename: "/components/Button.tsx",
+    name: "JSX: className with 5 classes (string literal)",
   },
   {
-    name: "JSX: className with 5 classes (template literal)",
     code: `const element = <div className={\`${classes.FIVE}\`}></div>;`,
     filename: "/components/Button.tsx",
+    name: "JSX: className with 5 classes (template literal)",
   },
   {
-    name: "JSX: className variable reference",
     code: `const element = <div className={buttonVariants}></div>;`,
     filename: "/components/Button.tsx",
+    name: "JSX: className variable reference",
   },
   {
-    name: "JSX: className with ternary (both sides <= 5 classes)",
     code: `const element = <div className={condition ? '${classes.FOUR}' : '${classes.SINGLE}'}></div>;`,
     filename: "/components/Button.tsx",
+    name: "JSX: className with ternary (both sides <= 5 classes)",
   },
 
   // Options: Custom maxInlineClasses
   {
-    name: "Vue: 4 classes allowed with custom maxInlineClasses",
     code: `<template><div class="${classes.FOUR}"></div></template>`,
     filename: "/components/Button.vue",
+    name: "Vue: 4 classes allowed with custom maxInlineClasses",
     options: [{ maxInlineClasses: 4 }],
-    ...vueParser,
+    ...vueParserConfig,
   },
   {
-    name: "JSX: 4 classes allowed with custom maxInlineClasses",
     code: `const element = <div className="${classes.FOUR}"></div>;`,
     filename: "/components/Button.tsx",
+    name: "JSX: 4 classes allowed with custom maxInlineClasses",
     options: [{ maxInlineClasses: 4 }],
   },
 
   // Options: directoryPattern exclusion
   {
-    name: "Vue: 6 classes allowed outside of directoryPattern",
     code: `<template><div class="${classes.SIX}"></div></template>`,
     filename: "/utils/helpers.vue",
+    name: "Vue: 6 classes allowed outside of directoryPattern",
     options: [{ directoryPattern: "/components/" }],
-    ...vueParser,
+    ...vueParserConfig,
   },
   {
-    name: "JSX: 6 classes allowed outside of directoryPattern",
     code: `const element = <div className="${classes.SIX}"></div>;`,
     filename: "/utils/helpers.tsx",
+    name: "JSX: 6 classes allowed outside of directoryPattern",
     options: [{ directoryPattern: "/components/" }],
   },
 ];
@@ -156,113 +154,113 @@ const valid: ValidTestCase<readonly unknown[]>[] = [
 const invalid: InvalidTestCase<string, readonly unknown[]>[] = [
   // Vue: static class exceeding maxInlineClasses
   {
-    name: "Vue: class with 6 classes",
     code: `<template><div class="${classes.SIX}"></div></template>`,
-    filename: "/components/Button.vue",
     errors: [{ messageId: MESSAGE_IDS.limitedInlineClassName }],
-    ...vueParser,
+    filename: "/components/Button.vue",
+    name: "Vue: class with 6 classes",
+    ...vueParserConfig,
   },
 
   // Vue: dynamic class exceeding maxInlineClasses
   {
-    name: "Vue: :class with 6 classes (string literal)",
     code: `<template><div :class="'${classes.SIX}'"></div></template>`,
-    filename: "/components/Button.vue",
     errors: [{ messageId: MESSAGE_IDS.limitedInlineClassName }],
-    ...vueParser,
+    filename: "/components/Button.vue",
+    name: "Vue: :class with 6 classes (string literal)",
+    ...vueParserConfig,
   },
   {
-    name: "Vue: :class with 6 classes (template literal)",
     code: `<template><div :class="\`${classes.SIX}\`"></div></template>`,
-    filename: "/components/Button.vue",
     errors: [{ messageId: MESSAGE_IDS.limitedInlineClassName }],
-    ...vueParser,
+    filename: "/components/Button.vue",
+    name: "Vue: :class with 6 classes (template literal)",
+    ...vueParserConfig,
   },
   {
-    name: "Vue: :class array with one item exceeding maxInlineClasses",
     code: `<template><div :class="['${classes.SIX}', '${classes.SINGLE}']"></div></template>`,
-    filename: "/components/Button.vue",
     errors: [{ messageId: MESSAGE_IDS.limitedInlineClassName }],
-    ...vueParser,
+    filename: "/components/Button.vue",
+    name: "Vue: :class array with one item exceeding maxInlineClasses",
+    ...vueParserConfig,
   },
 
   // JSX: static className exceeding maxInlineClasses
   {
-    name: "JSX: className with 6 classes",
     code: `const element = <div className="${classes.SIX}"></div>;`,
-    filename: "/components/Button.tsx",
     errors: [{ messageId: MESSAGE_IDS.limitedInlineClassName }],
+    filename: "/components/Button.tsx",
+    name: "JSX: className with 6 classes",
   },
 
   // JSX: dynamic className exceeding maxInlineClasses
   {
-    name: "JSX: className with 6 classes (string literal)",
     code: `const element = <div className={'${classes.SIX}'}></div>;`,
-    filename: "/components/Button.tsx",
     errors: [{ messageId: MESSAGE_IDS.limitedInlineClassName }],
+    filename: "/components/Button.tsx",
+    name: "JSX: className with 6 classes (string literal)",
   },
   {
-    name: "JSX: className with 6 classes (template literal)",
     code: `const element = <div className={\`${classes.SIX}\`}></div>;`,
-    filename: "/components/Button.tsx",
     errors: [{ messageId: MESSAGE_IDS.limitedInlineClassName }],
+    filename: "/components/Button.tsx",
+    name: "JSX: className with 6 classes (template literal)",
   },
   {
-    name: "JSX: className with ternary with 6 classes on left side",
     code: `const element = <div className={condition ? '${classes.SIX}' : '${classes.SINGLE}'}></div>;`,
-    filename: "/components/Button.tsx",
     errors: [{ messageId: MESSAGE_IDS.limitedInlineClassName }],
+    filename: "/components/Button.tsx",
+    name: "JSX: className with ternary with 6 classes on left side",
   },
 
   // cn() usage violations
   {
-    name: "Vue: cn() in :class",
     code: `<template><div :class="cn('${classes.SINGLE}')"></div></template>`,
-    filename: "/components/Button.vue",
     errors: [{ messageId: MESSAGE_IDS.noCnInClassName }],
-    ...vueParser,
+    filename: "/components/Button.vue",
+    name: "Vue: cn() in :class",
+    ...vueParserConfig,
   },
   {
-    name: "Vue: nested cn() in :class",
     code: `<template><div :class="cn('${classes.SINGLE}', cn('${classes.SINGLE}'))"></div></template>`,
+    errors: [{ messageId: MESSAGE_IDS.noCnInClassName }],
     filename: "/components/Button.vue",
-    errors: [{ messageId: MESSAGE_IDS.noCnInClassName }],
-    ...vueParser,
+    name: "Vue: nested cn() in :class",
+    ...vueParserConfig,
   },
   {
-    name: "JSX: cn() in className",
     code: `const element = <div className={cn('${classes.SINGLE}')}></div>;`,
-    filename: "/components/Button.tsx",
     errors: [{ messageId: MESSAGE_IDS.noCnInClassName }],
+    filename: "/components/Button.tsx",
+    name: "JSX: cn() in className",
   },
   {
-    name: "JSX: nested cn() in className",
     code: `const element = <div className={cn('${classes.SINGLE}', cn('${classes.SINGLE}'))}></div>;`,
-    filename: "/components/Button.tsx",
     errors: [{ messageId: MESSAGE_IDS.noCnInClassName }],
+    filename: "/components/Button.tsx",
+    name: "JSX: nested cn() in className",
   },
   {
-    name: "JSX: cn() in template literal",
     code: `const element = <div className={\`base \${cn('${classes.SINGLE}')}\`}></div>;`,
-    filename: "/components/Button.tsx",
     errors: [{ messageId: MESSAGE_IDS.noCnInClassName }],
+    filename: "/components/Button.tsx",
+    name: "JSX: cn() in template literal",
   },
 
   // Multiple violations in one file
   {
-    name: "Vue: multiple :class violations",
     code: `<template><div :class="'${classes.SIX}'" :class="cn('${classes.SINGLE}')"></div></template>`,
-    filename: "/components/Button.vue",
     errors: [
       { messageId: MESSAGE_IDS.limitedInlineClassName },
       { messageId: MESSAGE_IDS.noCnInClassName },
     ],
-    ...vueParser,
+    filename: "/components/Button.vue",
+    name: "Vue: multiple :class violations",
+    ...vueParserConfig,
   },
 ];
 // #endregion Invalid Test Cases
 
-tester.run("limited-inline-classname", rule as any, {
-  valid,
+tester.run("limited-inline-classname", rule as never, {
   invalid,
+  valid,
 });

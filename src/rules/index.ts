@@ -1,4 +1,5 @@
 import { TSESLint } from "@typescript-eslint/utils";
+
 import { rule as limitedInlineClassName } from "./limited-inline-classname.js";
 
 export const rules = {

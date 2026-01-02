@@ -1,36 +1,32 @@
 import type { ParserServices } from "@typescript-eslint/utils";
-import { RuleContext } from "@typescript-eslint/utils/ts-eslint";
 
-type NodeVisitor = Record<string, (node: any) => void>;
+import { RuleContext, RuleListener } from "@typescript-eslint/utils/ts-eslint";
 
 /**
  * Extended parser services to add methods provided by vue-eslint-parser
  */
 interface VueParserServices {
-  defineTemplateBodyVisitor: (
-    templateVisitor: NodeVisitor,
-    scriptVisitor?: NodeVisitor
-  ) => NodeVisitor;
   defineDocumentVisitor?: (
-    documentVisitor: NodeVisitor,
-    options?: Record<string, any>
-  ) => NodeVisitor;
-}
-
-function isVueParserServices(
-  services: Partial<ParserServices> | undefined
-): services is ParserServices & VueParserServices {
-  return services !== undefined && "defineTemplateBodyVisitor" in services;
+    documentVisitor: RuleListener,
+    options?: Record<string, unknown>
+  ) => RuleListener;
+  defineTemplateBodyVisitor: (
+    templateVisitor: RuleListener,
+    scriptVisitor?: RuleListener
+  ) => RuleListener;
 }
 
 /**
  * Creates rule visitors that work for both Vue single-file components and
  * regular script files (e.g., React).
  */
-export function createRuleVisitors(
-  context: RuleContext<any, any>,
-  templateVisitor: NodeVisitor,
-  scriptVisitor: NodeVisitor
+export function createRuleVisitors<
+  TMessageIds extends string,
+  TOptions extends readonly unknown[]
+>(
+  context: RuleContext<TMessageIds, TOptions>,
+  templateVisitor: RuleListener,
+  scriptVisitor: RuleListener
 ) {
   const fileName = context.filename;
 
@@ -47,4 +43,10 @@ export function createRuleVisitors(
   }
 
   return scriptVisitor;
+}
+
+function isVueParserServices(
+  services: Partial<ParserServices> | undefined
+): services is ParserServices & VueParserServices {
+  return services !== undefined && "defineTemplateBodyVisitor" in services;
 }
