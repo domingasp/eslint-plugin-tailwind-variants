@@ -163,6 +163,7 @@ export const rule = createRule<Options, MessageIds>({
         additionalProperties: false,
         properties: {
           directoryPattern: {
+            default: "/components/",
             description: 'Directory pattern to match, e.g., "/components/".',
             type: "string",
           },

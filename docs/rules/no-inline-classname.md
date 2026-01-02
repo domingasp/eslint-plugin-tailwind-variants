@@ -140,7 +140,7 @@ const Button = () => (
 
 ## :rocket: Version
 
-This rule was introduced in eslint-plugin-vue v0.1.0
+This rule was introduced in eslint-plugin-tailwind-variants v0.1.0
 
 ## :mag: Implementation
 
