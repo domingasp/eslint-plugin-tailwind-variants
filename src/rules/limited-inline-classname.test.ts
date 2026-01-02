@@ -1,13 +1,13 @@
 import {
   InvalidTestCase,
-  RuleTester as TSRuleTester,
+  RuleTester,
   ValidTestCase,
 } from "@typescript-eslint/rule-tester";
 import vueParser from "vue-eslint-parser";
 
 import { MESSAGE_IDS, rule } from "./limited-inline-classname.js";
 
-const tester = new TSRuleTester();
+const tester = new RuleTester();
 
 const classes = {
   FIVE: "bg-red-500 text-white p-2 m-1 rounded",
