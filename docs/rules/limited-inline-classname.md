@@ -144,7 +144,5 @@ This rule was introduced in eslint-plugin-tailwind-variants v0.1.0
 
 ## :mag: Implementation
 
-TODO
-
-- Rule source
-- Test source
+- [Rule source](https://github.com/domingasp/eslint-plugin-tailwind-variants/blob/main/src/rules/limited-inline-classname.ts)
+- [Test source](https://github.com/domingasp/eslint-plugin-tailwind-variants/blob/main/src/rules/limited-inline-classname.test.ts)
