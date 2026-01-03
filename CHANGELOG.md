@@ -1,0 +1,16 @@
+## 1.0.0 (2026-01-03)
+
+### Features
+
+* add automated release pipeline ([70b68d6](https://github.com/domingasp/eslint-plugin-tailwind-variants/commit/70b68d677de559e8b973d37de43477eb69e2f215))
+
+### Bug Fixes
+
+* add conventional-changelog commits ([7038e09](https://github.com/domingasp/eslint-plugin-tailwind-variants/commit/7038e0982372bbad3ee8b316ca0e46b428b5e263))
+* add conventional-changelog-conventionalcommits ([faf1bf8](https://github.com/domingasp/eslint-plugin-tailwind-variants/commit/faf1bf82349455637c4f92cf44ec1e22d167cd0e))
+* add names to steps ([64f19bc](https://github.com/domingasp/eslint-plugin-tailwind-variants/commit/64f19bc7e5cfd76fbb001cb2e9fe8d949283a521))
+* double pnpm version ([b98b9f3](https://github.com/domingasp/eslint-plugin-tailwind-variants/commit/b98b9f3be65d72ac6e5489073d3f75950bc0cd99))
+* missing semantic release plugins ([a2a520e](https://github.com/domingasp/eslint-plugin-tailwind-variants/commit/a2a520efb6a6c5f328eccd1908d5f577c0930bcf))
+* move to semantic release action ([3d533ec](https://github.com/domingasp/eslint-plugin-tailwind-variants/commit/3d533ecfe6dd50daf03e8692234509f99349f750))
+* unavailable semantic release plugins ([bf22a52](https://github.com/domingasp/eslint-plugin-tailwind-variants/commit/bf22a5234090a9fd93392258e0de033e8eb5f1a2))
+* use trusted publisher for release ([c02aad1](https://github.com/domingasp/eslint-plugin-tailwind-variants/commit/c02aad1e63df97c36093c0680bb0248aa3ea505b))
