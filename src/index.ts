@@ -14,18 +14,16 @@ const plugin = {
 } satisfies Linter.Plugin;
 
 Object.assign(plugin.configs, {
-  recommended: [
-    {
-      plugins: {
-        "eslint-plugin-tailwind-variants": plugin,
-      },
-      rules: {
-        "tailwind-variants/limited-inline-classname": "error",
-        "tailwind-variants/require-variants-call-styles-name": "error",
-        "tailwind-variants/require-variants-suffix": "error",
-      },
+  recommended: {
+    plugins: {
+      "eslint-plugin-tailwind-variants": plugin,
     },
-  ] satisfies Linter.ConfigType,
+    rules: {
+      "tailwind-variants/limited-inline-classes": "error",
+      "tailwind-variants/require-variants-call-styles-name": "error",
+      "tailwind-variants/require-variants-suffix": "error",
+    },
+  } satisfies Linter.ConfigType,
 });
 
 export default plugin;

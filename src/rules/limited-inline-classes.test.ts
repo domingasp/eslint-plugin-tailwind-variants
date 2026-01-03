@@ -5,7 +5,7 @@ import {
 } from "@typescript-eslint/rule-tester";
 import vueParser from "vue-eslint-parser";
 
-import { MESSAGE_IDS, rule } from "./limited-inline-classname.js";
+import { MESSAGE_IDS, rule } from "./limited-inline-classes.js";
 
 const tester = new RuleTester();
 
@@ -155,7 +155,7 @@ const invalid: InvalidTestCase<string, readonly unknown[]>[] = [
   // Vue: static class exceeding maxInlineClasses
   {
     code: `<template><div class="${classes.SIX}"></div></template>`,
-    errors: [{ messageId: MESSAGE_IDS.limitedInlineClassName }],
+    errors: [{ messageId: MESSAGE_IDS.limitedInlineClasses }],
     filename: "/components/Button.vue",
     name: "Vue: class with 6 classes",
     ...vueParserConfig,
@@ -164,21 +164,21 @@ const invalid: InvalidTestCase<string, readonly unknown[]>[] = [
   // Vue: dynamic class exceeding maxInlineClasses
   {
     code: `<template><div :class="'${classes.SIX}'"></div></template>`,
-    errors: [{ messageId: MESSAGE_IDS.limitedInlineClassName }],
+    errors: [{ messageId: MESSAGE_IDS.limitedInlineClasses }],
     filename: "/components/Button.vue",
     name: "Vue: :class with 6 classes (string literal)",
     ...vueParserConfig,
   },
   {
     code: `<template><div :class="\`${classes.SIX}\`"></div></template>`,
-    errors: [{ messageId: MESSAGE_IDS.limitedInlineClassName }],
+    errors: [{ messageId: MESSAGE_IDS.limitedInlineClasses }],
     filename: "/components/Button.vue",
     name: "Vue: :class with 6 classes (template literal)",
     ...vueParserConfig,
   },
   {
     code: `<template><div :class="['${classes.SIX}', '${classes.SINGLE}']"></div></template>`,
-    errors: [{ messageId: MESSAGE_IDS.limitedInlineClassName }],
+    errors: [{ messageId: MESSAGE_IDS.limitedInlineClasses }],
     filename: "/components/Button.vue",
     name: "Vue: :class array with one item exceeding maxInlineClasses",
     ...vueParserConfig,
@@ -187,7 +187,7 @@ const invalid: InvalidTestCase<string, readonly unknown[]>[] = [
   // JSX: static className exceeding maxInlineClasses
   {
     code: `const element = <div className="${classes.SIX}"></div>;`,
-    errors: [{ messageId: MESSAGE_IDS.limitedInlineClassName }],
+    errors: [{ messageId: MESSAGE_IDS.limitedInlineClasses }],
     filename: "/components/Button.tsx",
     name: "JSX: className with 6 classes",
   },
@@ -195,19 +195,19 @@ const invalid: InvalidTestCase<string, readonly unknown[]>[] = [
   // JSX: dynamic className exceeding maxInlineClasses
   {
     code: `const element = <div className={'${classes.SIX}'}></div>;`,
-    errors: [{ messageId: MESSAGE_IDS.limitedInlineClassName }],
+    errors: [{ messageId: MESSAGE_IDS.limitedInlineClasses }],
     filename: "/components/Button.tsx",
     name: "JSX: className with 6 classes (string literal)",
   },
   {
     code: `const element = <div className={\`${classes.SIX}\`}></div>;`,
-    errors: [{ messageId: MESSAGE_IDS.limitedInlineClassName }],
+    errors: [{ messageId: MESSAGE_IDS.limitedInlineClasses }],
     filename: "/components/Button.tsx",
     name: "JSX: className with 6 classes (template literal)",
   },
   {
     code: `const element = <div className={condition ? '${classes.SIX}' : '${classes.SINGLE}'}></div>;`,
-    errors: [{ messageId: MESSAGE_IDS.limitedInlineClassName }],
+    errors: [{ messageId: MESSAGE_IDS.limitedInlineClasses }],
     filename: "/components/Button.tsx",
     name: "JSX: className with ternary with 6 classes on left side",
   },
@@ -250,7 +250,7 @@ const invalid: InvalidTestCase<string, readonly unknown[]>[] = [
   {
     code: `<template><div :class="'${classes.SIX}'" :class="cn('${classes.SINGLE}')"></div></template>`,
     errors: [
-      { messageId: MESSAGE_IDS.limitedInlineClassName },
+      { messageId: MESSAGE_IDS.limitedInlineClasses },
       { messageId: MESSAGE_IDS.noCnInClassName },
     ],
     filename: "/components/Button.vue",
@@ -260,7 +260,7 @@ const invalid: InvalidTestCase<string, readonly unknown[]>[] = [
 ];
 // #endregion Invalid Test Cases
 
-tester.run("limited-inline-classname", rule as never, {
+tester.run("limited-inline-classes", rule as never, {
   invalid,
   valid,
 });
