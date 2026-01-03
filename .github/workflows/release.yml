@@ -4,12 +4,15 @@ on:
   push:
     branches:
       - main
+  
+permissions:
+  contents: read
 
 jobs:
   release:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       issues: write
       pull-requests: write
       id-token: write
@@ -19,7 +22,7 @@ jobs:
 
       - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: "lts/*"
           cache: 'pnpm'
           registry-url: 'https://registry.npmjs.org'
 
@@ -27,7 +30,7 @@ jobs:
       - run: pnpm test
       - run: pnpm build
 
-      - run: npx semantic-release
+      - run: npx -p semantic-release -p @semantic-release/changelog -p @semantic-release/git -p @semantic-release/github semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
