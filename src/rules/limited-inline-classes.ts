@@ -12,7 +12,7 @@ import { getBindClassExpression } from "../utils/get-bind-class-expression";
 const createRule = ESLintUtils.RuleCreator((name) => name);
 
 export const MESSAGE_IDS = {
-  limitedInlineClassName: "limitedInlineClassName",
+  limitedInlineClasses: "limitedInlineClasses",
   noCnInClassName: "noCnInClassName",
 } as const;
 
@@ -99,7 +99,7 @@ function validateExpression(
         if (countClasses(expr.value) > maxInlineClasses) {
           context.report({
             data: { max: maxInlineClasses.toString() },
-            messageId: MESSAGE_IDS.limitedInlineClassName,
+            messageId: MESSAGE_IDS.limitedInlineClasses,
             node: node as TSESTree.Node,
           });
           return true;
@@ -138,7 +138,7 @@ function validateExpression(
         if (countClasses(raw) > maxInlineClasses) {
           context.report({
             data: { max: maxInlineClasses.toString() },
-            messageId: MESSAGE_IDS.limitedInlineClassName,
+            messageId: MESSAGE_IDS.limitedInlineClasses,
             node: node as TSESTree.Node,
           });
           return true;
@@ -159,13 +159,13 @@ function validateExpression(
 }
 
 export const rule = createRule<Options, MessageIds>({
-  name: "limited-inline-classname",
+  name: "limited-inline-classes",
   meta: {
     docs: {
       description: `Allow a configurable number of inline class names; require use of tailwind-variants.`,
     },
     messages: {
-      limitedInlineClassName: `Inline className may contain at most {{max}} class. Use tailwind-variants instead.`,
+      limitedInlineClasses: `Inline className may contain at most {{max}} class. Use tailwind-variants instead.`,
       noCnInClassName:
         "Using cn() in className is not allowed in component definition. Use tailwind-variants instead.",
     },
@@ -225,7 +225,7 @@ export const rule = createRule<Options, MessageIds>({
           if (countClasses(value.value) > maxInlineClasses) {
             context.report({
               data: { max: maxInlineClasses.toString() },
-              messageId: MESSAGE_IDS.limitedInlineClassName,
+              messageId: MESSAGE_IDS.limitedInlineClasses,
               node: jsxAttr,
             });
             return;
@@ -257,7 +257,7 @@ export const rule = createRule<Options, MessageIds>({
           if (countClasses(vAttr.value.value) > maxInlineClasses) {
             context.report({
               data: { max: maxInlineClasses.toString() },
-              messageId: MESSAGE_IDS.limitedInlineClassName,
+              messageId: MESSAGE_IDS.limitedInlineClasses,
               node: vAttr as never,
             });
           }
