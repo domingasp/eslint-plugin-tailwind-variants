@@ -1,13 +1,13 @@
 ---
 pageClass: rule-details
 sidebarDepth: 0
-title: tailwind-variants/limited-inline-classname
+title: tailwind-variants/limited-inline-classes
 description: enforce limited number of inline class names and prohibit cn() usage
 frameworks: vue,react
 since: v0.1.0
 ---
 
-# tailwind-variants/limited-inline-classname
+# tailwind-variants/limited-inline-classes
 
 > enforce limited number of inline class names and prohibit cn() usage
 
@@ -21,7 +21,7 @@ The goal is to encourage the use of `tailwind-variants` for complex styling inst
 
 ```json
 {
-  "tailwind-variants/limited-inline-classname": ["error", {
+  "tailwind-variants/limited-inline-classes": ["error", {
     "maxInlineClasses": 5,
     "directoryPattern": "/components/"
   }]
@@ -33,7 +33,7 @@ The goal is to encourage the use of `tailwind-variants` for complex styling inst
 
 ### `{ "maxInlineClasses": 5 }` (default)
 
-<eslint-code-block :rules="{'tailwind-variants/limited-inline-classname': ['error']}">
+<eslint-code-block :rules="{'tailwind-variants/limited-inline-classes': ['error']}">
 
 ```vue
 <!-- ✓ GOOD -->
@@ -44,7 +44,7 @@ The goal is to encourage the use of `tailwind-variants` for complex styling inst
 
 </eslint-code-block>
 
-<eslint-code-block :rules="{'tailwind-variants/limited-inline-classname': ['error']}">
+<eslint-code-block :rules="{'tailwind-variants/limited-inline-classes': ['error']}">
 
 ```vue
 <!-- ✗ BAD -->
@@ -57,7 +57,7 @@ The goal is to encourage the use of `tailwind-variants` for complex styling inst
 
 ### `{ "maxInlineClasses": 3 }`
 
-<eslint-code-block :rules="{'tailwind-variants/limited-inline-classname': ['error', { maxInlineClasses: 3 }]}">
+<eslint-code-block :rules="{'tailwind-variants/limited-inline-classes': ['error', { maxInlineClasses: 3 }]}">
 
 ```jsx
 /* ✓ GOOD */
@@ -68,7 +68,7 @@ const Button = () => (
 
 </eslint-code-block>
 
-<eslint-code-block :rules="{'tailwind-variants/limited-inline-classname': ['error', { maxInlineClasses: 3 }]}">
+<eslint-code-block :rules="{'tailwind-variants/limited-inline-classes': ['error', { maxInlineClasses: 3 }]}">
 
 ```jsx
 /* ✗ BAD */
@@ -83,7 +83,7 @@ const Button = () => (
 
 Only files matching the directory pattern will be checked by this rule.
 
-<eslint-code-block :rules="{'tailwind-variants/limited-inline-classname': ['error', { directoryPattern: '/src/' }]}">
+<eslint-code-block :rules="{'tailwind-variants/limited-inline-classes': ['error', { directoryPattern: '/src/' }]}">
 
 ```jsx
 // File: /src/components/Button.tsx
@@ -95,7 +95,7 @@ const Button = () => (
 
 </eslint-code-block>
 
-<eslint-code-block :rules="{'tailwind-variants/limited-inline-classname': ['error', { directoryPattern: '/src/' }]}">
+<eslint-code-block :rules="{'tailwind-variants/limited-inline-classes': ['error', { directoryPattern: '/src/' }]}">
 
 ```jsx
 // File: /utils/helper.tsx
@@ -111,7 +111,7 @@ const Helper = () => (
 
 This rule prohibits the use of `cn()` function calls in className attributes, regardless of the number of classes.
 
-<eslint-code-block :rules="{'tailwind-variants/limited-inline-classname': ['error']}">
+<eslint-code-block :rules="{'tailwind-variants/limited-inline-classes': ['error']}">
 
 ```vue
 <!-- ✗ BAD -->
@@ -123,7 +123,7 @@ This rule prohibits the use of `cn()` function calls in className attributes, re
 
 </eslint-code-block>
 
-<eslint-code-block :rules="{'tailwind-variants/limited-inline-classname': ['error']}">
+<eslint-code-block :rules="{'tailwind-variants/limited-inline-classes': ['error']}">
 
 ```jsx
 /* ✗ BAD */
@@ -144,5 +144,5 @@ This rule was introduced in eslint-plugin-tailwind-variants v0.1.0
 
 ## :mag: Implementation
 
-- [Rule source](https://github.com/domingasp/eslint-plugin-tailwind-variants/blob/main/src/rules/limited-inline-classname.ts)
-- [Test source](https://github.com/domingasp/eslint-plugin-tailwind-variants/blob/main/src/rules/limited-inline-classname.test.ts)
+- [Rule source](https://github.com/domingasp/eslint-plugin-tailwind-variants/blob/main/src/rules/limited-inline-classes.ts)
+- [Test source](https://github.com/domingasp/eslint-plugin-tailwind-variants/blob/main/src/rules/limited-inline-classes.test.ts)
