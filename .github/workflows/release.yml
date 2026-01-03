@@ -17,22 +17,32 @@ jobs:
       pull-requests: write
       id-token: write
     steps:
-      - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v4
+      - name: Checkout
+        uses: actions/checkout@v6
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
 
-      - uses: actions/setup-node@v5
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
         with:
           node-version: "lts/*"
           cache: 'pnpm'
           registry-url: 'https://registry.npmjs.org'
 
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm test
-      - run: pnpm build
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-      - run: npx -p semantic-release -p @semantic-release/changelog -p @semantic-release/git -p @semantic-release/github semantic-release
-        
-      - run: |
+      - name: Run tests
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+      
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
           npx -p semantic-release \
               -p @semantic-release/commit-analyzer \
               -p @semantic-release/release-notes-generator \
@@ -41,5 +51,3 @@ jobs:
               -p @semantic-release/git \
               -p @semantic-release/github \
               semantic-release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
