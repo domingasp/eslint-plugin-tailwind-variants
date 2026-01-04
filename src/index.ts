@@ -18,7 +18,7 @@ const plugin = {
     version: packageVersion,
   },
   rules,
-} as unknown as ESLint.Plugin;
+} as ESLint.Plugin;
 
 export const configs: PluginConfigs = {
   recommended: {
@@ -32,6 +32,8 @@ export const configs: PluginConfigs = {
     },
   },
 };
+
+export { plugin };
 
 export default {
   ...plugin,
