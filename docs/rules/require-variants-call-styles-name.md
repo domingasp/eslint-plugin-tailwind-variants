@@ -2,7 +2,7 @@
 pageClass: rule-details
 sidebarDepth: 0
 title: tailwind-variants/require-variants-call-styles-name
-description: enforce that the first argument to variants() is a styles name identifier
+description: enforce that when calling a function returned by tailwind-variants (tv()), the result is assigned to a variable named styles (or a configurable name)
 frameworks: agnostic
 since: v0.1.0
 ---
