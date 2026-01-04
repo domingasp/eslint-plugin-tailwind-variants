@@ -1,3 +1,11 @@
+## [1.0.1](https://github.com/domingasp/eslint-plugin-tailwind-variants/compare/v1.0.0...v1.0.1) (2026-01-04)
+
+### Bug Fixes
+
+* config typescript support ([986cced](https://github.com/domingasp/eslint-plugin-tailwind-variants/commit/986cced9c0f8b58aa3fa85703f37a11ee9e4003e))
+* configure json importing ([944e307](https://github.com/domingasp/eslint-plugin-tailwind-variants/commit/944e30764e0ae4764ff2378f017f0134d6b52419))
+* remove unnecessary required peerdeps ([49f8f83](https://github.com/domingasp/eslint-plugin-tailwind-variants/commit/49f8f838385b0a9332a76563117ee7a8a19c07e2))
+
 ## 1.0.0 (2026-01-03)
 
 ### Features
