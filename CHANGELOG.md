@@ -1,3 +1,9 @@
+## [1.0.2](https://github.com/domingasp/eslint-plugin-tailwind-variants/compare/v1.0.1...v1.0.2) (2026-01-04)
+
+### Bug Fixes
+
+* circular lint rules ([fe3a87d](https://github.com/domingasp/eslint-plugin-tailwind-variants/commit/fe3a87de024973fe4da73864ebdf610aa8e7ba17))
+
 ## [1.0.1](https://github.com/domingasp/eslint-plugin-tailwind-variants/compare/v1.0.0...v1.0.1) (2026-01-04)
 
 ### Bug Fixes
