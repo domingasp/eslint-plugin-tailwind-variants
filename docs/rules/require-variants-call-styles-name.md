@@ -95,7 +95,7 @@ const styles = buttonVariants();
 
 ## :wrench: Auto-fix
 
-This rule provides auto-fix functionality. When a variable name assigned from `tv` does not match the configured value, the fixer will automatically replace the name.
+This rule provides auto-fix functionality. When a variable name assigned from calling a variant function does not match the configured value, the fixer will automatically replace the name.
 
 Before:
 ```jsx
