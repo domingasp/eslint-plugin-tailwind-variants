@@ -1,4 +1,4 @@
-import { TSESLint } from "@typescript-eslint/utils";
+import { ESLint } from "eslint";
 
 import { rule as limitedInlineClasses } from "./limited-inline-classes.js";
 import { rule as requireVariantsCallStylesName } from "./require-variants-call-styles-name.js";
@@ -8,4 +8,5 @@ export const rules = {
   "limited-inline-classes": limitedInlineClasses,
   "require-variants-call-styles-name": requireVariantsCallStylesName,
   "require-variants-suffix": requireVariantsSuffix,
-} satisfies TSESLint.FlatConfig.Plugin["rules"];
+  // as unknown due to ESLint and TSESLint types not aligning perfectly
+} as unknown as ESLint.Plugin["rules"];
