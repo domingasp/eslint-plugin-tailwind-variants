@@ -11,11 +11,21 @@ const tester = new RuleTester();
 // #region Valid Test Cases
 const valid: ValidTestCase<readonly unknown[]>[] = [
   {
-    code: `const styles = tv({})`,
-    name: "Variable named 'styles' (default)",
+    code: `const buttonVariants = tv({})`,
+    name: "Direct tv() call - no enforcement",
   },
   {
-    code: `const variants = tv({})`,
+    code: `
+			const buttonVariants = tv({});
+			const styles = buttonVariants();
+		`,
+    name: "Variant function call named 'styles' (default)",
+  },
+  {
+    code: `
+			const cardVariants = tv({});
+			const variants = cardVariants();
+		`,
     name: "Variable named custom 'variants'",
     options: [{ name: "variants" }],
   },
@@ -25,17 +35,29 @@ const valid: ValidTestCase<readonly unknown[]>[] = [
 // #region Invalid Test Cases
 const invalid: InvalidTestCase<string, readonly unknown[]>[] = [
   {
-    code: `const variants = tv({})`,
+    code: `
+			const buttonVariants = tv({});
+			const buttonStyles = buttonVariants();
+		`,
     errors: [{ messageId: MESSAGE_IDS.requireVariantsCallStylesName }],
-    name: "Variable not named 'styles' (default)",
-    output: `const styles = tv({})`,
+    name: "Variant function call not named 'styles' (default)",
+    output: `
+			const buttonVariants = tv({});
+			const styles = buttonVariants();
+		`,
   },
   {
-    code: `const styles = tv({})`,
+    code: `
+			const cardVariants = tv({});
+			const styles = cardVariants();
+		`,
     errors: [{ messageId: MESSAGE_IDS.requireVariantsCallStylesName }],
-    name: "Variable not named custom 'variants'",
+    name: "Variant function call not named custom 'variants'",
     options: [{ name: "variants" }],
-    output: `const variants = tv({})`,
+    output: `
+			const cardVariants = tv({});
+			const variants = cardVariants();
+		`,
   },
 ];
 // #endregion Invalid Test Cases
