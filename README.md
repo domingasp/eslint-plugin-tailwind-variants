@@ -49,8 +49,8 @@ export default defineConfig([
 
 ### Rules
 
-| Name                                                                                 | Description                                                                                                                 | `recommended` | autofix |
-| ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- | ------------- | ------- |
-| [require-variants-call-styles-name](docs/rules/require-variants-call-styles-name.md) | enforce that the result of tailwind-variants ( `tv()` ) is assigned to a variable named  `styles`  (or a configurable name) | ✔             | ✔       |
-| [require-variants-suffix](docs/rules/require-variants-suffix.md)                     | require variables assigned from tv() to end with a specific suffix                                                          | ✔             | ✔       |
-| [limited-inline-classes](docs/rules/limited-inline-classes.md)                       | enforce limited number of inline class names and prohibit cn() usage                                                        | ✔             |         |
+| Name                                                                                 | Description                                                                                                                                               | `recommended` | autofix |
+| ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------- |
+| [require-variants-call-styles-name](docs/rules/require-variants-call-styles-name.md) | enforce that when calling a function returned by tailwind-variants (`tv()`), the result is assigned to a variable named `styles` (or a configurable name) | ✔             | ✔       |
+| [require-variants-suffix](docs/rules/require-variants-suffix.md)                     | require variables assigned from tv() to end with a specific suffix                                                                                        | ✔             | ✔       |
+| [limited-inline-classes](docs/rules/limited-inline-classes.md)                       | enforce limited number of inline class names and prohibit cn() usage                                                                                      | ✔             |         |
