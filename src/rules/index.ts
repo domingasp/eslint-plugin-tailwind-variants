@@ -8,4 +8,5 @@ export const rules = {
   "limited-inline-classes": limitedInlineClasses,
   "require-variants-call-styles-name": requireVariantsCallStylesName,
   "require-variants-suffix": requireVariantsSuffix,
+  // as unknown due to ESLint and TSESLint types not aligning perfectly
 } as unknown as ESLint.Plugin["rules"];
