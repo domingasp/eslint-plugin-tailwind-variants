@@ -21,12 +21,13 @@ export const rule = createRule<Options, MessageIds>({
   name: "require-variants-call-styles-name",
   meta: {
     docs: {
-      description: "Require variables assigned from tv() to be named {{name}}.",
+      description:
+        "Require variables assigned from calling a function returned by tv() to be named {{name}}.",
     },
     fixable: "code",
     messages: {
       requireVariantsCallStylesName:
-        "Variable assigned from tv() must be named '{{name}}'.",
+        "Require variables assigned from calling a function returned by tv() to be named {{name}}.",
     },
     schema: [
       {
@@ -64,20 +65,8 @@ export const rule = createRule<Options, MessageIds>({
         if (init.callee.type !== "Identifier") return;
         if (id.type !== "Identifier") return;
 
-        // Always enforce required name for direct tv() assignment
+        // Track variant functions created by tv()
         if (init.callee.name === "tv") {
-          if (id.name !== requiredName) {
-            context.report({
-              data: {
-                functionName: "tv",
-                name: requiredName,
-              },
-              fix: (fixer) => fixer.replaceText(id, requiredName),
-              messageId: MESSAGE_IDS.requireVariantsCallStylesName,
-              node: id,
-            });
-          }
-
           variantFunctions.add(id.name);
           return;
         }
