@@ -64,20 +64,8 @@ export const rule = createRule<Options, MessageIds>({
         if (init.callee.type !== "Identifier") return;
         if (id.type !== "Identifier") return;
 
-        // Always enforce required name for direct tv() assignment
+        // Track variant functions created by tv()
         if (init.callee.name === "tv") {
-          if (id.name !== requiredName) {
-            context.report({
-              data: {
-                functionName: "tv",
-                name: requiredName,
-              },
-              fix: (fixer) => fixer.replaceText(id, requiredName),
-              messageId: MESSAGE_IDS.requireVariantsCallStylesName,
-              node: id,
-            });
-          }
-
           variantFunctions.add(id.name);
           return;
         }
