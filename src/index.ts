@@ -1,29 +1,39 @@
-import { Linter } from "@typescript-eslint/utils/ts-eslint";
+import { ESLint, Linter } from "eslint";
 
+import {
+  name as packageName,
+  version as packageVersion,
+} from "../package.json";
 import { rules } from "./rules/index.js";
 
+type PluginConfigs = {
+  recommended: Linter.Config;
+};
+
+const pluginName = "tailwind-variants";
+
 const plugin = {
-  // Plugin type expects Config rather than ConfigType
-  configs: {} as Record<string, Linter.Config>,
   meta: {
-    name: "eslint-plugin-tailwind-variants",
-    namespace: "tailwind-variants",
-    version: "0.1.0",
+    name: packageName,
+    version: packageVersion,
   },
   rules,
-} satisfies Linter.Plugin;
+} as unknown as ESLint.Plugin;
 
-Object.assign(plugin.configs, {
+export const configs: PluginConfigs = {
   recommended: {
     plugins: {
-      "eslint-plugin-tailwind-variants": plugin,
+      [pluginName]: plugin,
     },
     rules: {
-      "tailwind-variants/limited-inline-classes": "error",
-      "tailwind-variants/require-variants-call-styles-name": "error",
-      "tailwind-variants/require-variants-suffix": "error",
+      [`${pluginName}/limited-inline-classes`]: "error",
+      [`${pluginName}/require-variants-call-styles-name`]: "error",
+      [`${pluginName}/require-variants-suffix`]: "error",
     },
-  } satisfies Linter.ConfigType,
-});
+  },
+};
 
-export default plugin;
+export default {
+  ...plugin,
+  configs,
+} as ESLint.Plugin & { configs: PluginConfigs };
