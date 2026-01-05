@@ -4,12 +4,17 @@ import {
   ValidTestCase,
 } from "@typescript-eslint/rule-tester";
 
-import { MESSAGE_IDS, rule } from "./require-variants-suffix";
+import {
+  MESSAGE_IDS,
+  MessageIds,
+  Options,
+  rule,
+} from "./require-variants-suffix";
 
 const tester = new RuleTester();
 
 // #region Valid Test Cases
-const valid: ValidTestCase<readonly unknown[]>[] = [
+const valid: ValidTestCase<Options>[] = [
   {
     code: `const buttonVariants = tv({})`,
     name: "Variable ends with 'Variants' suffix (default)",
@@ -23,7 +28,7 @@ const valid: ValidTestCase<readonly unknown[]>[] = [
 // #endregion Valid Test Cases
 
 // #region Invalid Test Cases
-const invalid: InvalidTestCase<string, readonly unknown[]>[] = [
+const invalid: InvalidTestCase<MessageIds, Options>[] = [
   {
     code: `const button = tv({})`,
     errors: [{ messageId: MESSAGE_IDS.requireVariantsSuffix }],
@@ -40,7 +45,7 @@ const invalid: InvalidTestCase<string, readonly unknown[]>[] = [
 ];
 // #endregion Invalid Test Cases
 
-tester.run("require-variants-suffix", rule as never, {
+tester.run("require-variants-suffix", rule, {
   invalid,
   valid,
 });

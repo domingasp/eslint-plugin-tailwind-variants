@@ -16,8 +16,8 @@ export const MESSAGE_IDS = {
   noCnInClassName: "noCnInClassName",
 } as const;
 
-type MessageIds = (typeof MESSAGE_IDS)[keyof typeof MESSAGE_IDS];
-type Options = [
+export type MessageIds = (typeof MESSAGE_IDS)[keyof typeof MESSAGE_IDS];
+export type Options = [
   {
     /**
      * Directory pattern to match

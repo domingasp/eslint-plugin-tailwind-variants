@@ -4,12 +4,17 @@ import {
   ValidTestCase,
 } from "@typescript-eslint/rule-tester";
 
-import { MESSAGE_IDS, rule } from "./require-variants-call-styles-name";
+import {
+  MESSAGE_IDS,
+  MessageIds,
+  Options,
+  rule,
+} from "./require-variants-call-styles-name";
 
 const tester = new RuleTester();
 
 // #region Valid Test Cases
-const valid: ValidTestCase<readonly unknown[]>[] = [
+const valid: ValidTestCase<Options>[] = [
   {
     code: `const buttonVariants = tv({})`,
     name: "Direct tv() call - no enforcement",
@@ -33,7 +38,7 @@ const valid: ValidTestCase<readonly unknown[]>[] = [
 // #endregion Valid Test Cases
 
 // #region Invalid Test Cases
-const invalid: InvalidTestCase<string, readonly unknown[]>[] = [
+const invalid: InvalidTestCase<MessageIds, Options>[] = [
   {
     code: `
 			const buttonVariants = tv({});
@@ -62,7 +67,7 @@ const invalid: InvalidTestCase<string, readonly unknown[]>[] = [
 ];
 // #endregion Invalid Test Cases
 
-tester.run("require-variants-call-styles-name", rule as never, {
+tester.run("require-variants-call-styles-name", rule, {
   invalid,
   valid,
 });
