@@ -1,3 +1,17 @@
+## [2.0.0](https://github.com/domingasp/eslint-plugin-tailwind-variants/compare/v1.0.2...v2.0.0) (2026-01-05)
+
+### ⚠ BREAKING CHANGES
+
+* recommended plugin usage now requires a spread
+
+### Features
+
+* add sort custom properties rule ([c67c347](https://github.com/domingasp/eslint-plugin-tailwind-variants/commit/c67c3471548005597f36b153713438060c7db138))
+
+### Performance Improvements
+
+* mitigate ReDoS vulnerability ([0d9593a](https://github.com/domingasp/eslint-plugin-tailwind-variants/commit/0d9593ad796263fb618353ba63a71516cd530a01))
+
 ## [1.0.2](https://github.com/domingasp/eslint-plugin-tailwind-variants/compare/v1.0.1...v1.0.2) (2026-01-04)
 
 ### Bug Fixes
