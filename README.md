@@ -47,6 +47,16 @@ export default defineConfig([
 ]);
 ```
 
+### Editor setup
+
+If you are using the ESLint plugin in VS Code add the following to your `settings.json` to enable `css` linting:
+
+```json
+{
+  "eslint.validate": ["css"]
+}
+```
+
 ### Rules
 
 | Name                                                                                 | Description                                                                                                                                               | `recommended` | autofix |
