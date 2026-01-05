@@ -5,7 +5,12 @@ import {
 } from "@typescript-eslint/rule-tester";
 import vueParser from "vue-eslint-parser";
 
-import { MESSAGE_IDS, rule } from "./limited-inline-classes.js";
+import {
+  MESSAGE_IDS,
+  MessageIds,
+  Options,
+  rule,
+} from "./limited-inline-classes.js";
 
 const tester = new RuleTester();
 
@@ -21,7 +26,7 @@ const vueParserConfig = {
 };
 
 // #region Valid Test Cases
-const valid: ValidTestCase<readonly unknown[]>[] = [
+const valid: ValidTestCase<Options>[] = [
   // Vue: static class with acceptable number of classes
   {
     code: `<template><div class="${classes.FIVE}"></div></template>`,
@@ -151,7 +156,7 @@ const valid: ValidTestCase<readonly unknown[]>[] = [
 // #endregion Valid Test Cases
 
 // #region Invalid Test Cases
-const invalid: InvalidTestCase<string, readonly unknown[]>[] = [
+const invalid: InvalidTestCase<MessageIds, Options>[] = [
   // Vue: static class exceeding maxInlineClasses
   {
     code: `<template><div class="${classes.SIX}"></div></template>`,
@@ -260,7 +265,7 @@ const invalid: InvalidTestCase<string, readonly unknown[]>[] = [
 ];
 // #endregion Invalid Test Cases
 
-tester.run("limited-inline-classes", rule as never, {
+tester.run("limited-inline-classes", rule, {
   invalid,
   valid,
 });

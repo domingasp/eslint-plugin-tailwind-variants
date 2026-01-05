@@ -6,8 +6,8 @@ export const MESSAGE_IDS = {
   requireVariantsCallStylesName: "requireVariantsCallStylesName",
 } as const;
 
-type MessageIds = (typeof MESSAGE_IDS)[keyof typeof MESSAGE_IDS];
-type Options = [
+export type MessageIds = (typeof MESSAGE_IDS)[keyof typeof MESSAGE_IDS];
+export type Options = [
   {
     /**
      * Name required for variables assigned from tv()

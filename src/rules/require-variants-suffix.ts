@@ -6,8 +6,8 @@ export const MESSAGE_IDS = {
   requireVariantsSuffix: "requireVariantsSuffix",
 } as const;
 
-type MessageIds = (typeof MESSAGE_IDS)[keyof typeof MESSAGE_IDS];
-type Options = [
+export type MessageIds = (typeof MESSAGE_IDS)[keyof typeof MESSAGE_IDS];
+export type Options = [
   {
     /**
      * Suffix required for variables assigned from tv()

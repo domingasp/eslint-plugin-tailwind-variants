@@ -1,7 +1,16 @@
 import css from "@eslint/css";
-import { RuleTester } from "@typescript-eslint/rule-tester";
+import {
+  InvalidTestCase,
+  RuleTester,
+  ValidTestCase,
+} from "@typescript-eslint/rule-tester";
 
-import { MESSAGE_IDS, rule } from "./sort-custom-properties";
+import {
+  MESSAGE_IDS,
+  MessageIds,
+  Options,
+  rule,
+} from "./sort-custom-properties";
 
 const tester = new RuleTester({
   language: "css/css",
@@ -9,7 +18,7 @@ const tester = new RuleTester({
 });
 
 // #region Valid Test Cases
-const valid = [
+const valid: ValidTestCase<Options>[] = [
   {
     code: `
 			:root {
@@ -255,7 +264,7 @@ const valid = [
 // #endregion Valid Test Cases
 
 // #region Invalid Test Cases
-const invalid = [
+const invalid: InvalidTestCase<MessageIds, Options>[] = [
   {
     code: `
 			:root {
@@ -667,7 +676,7 @@ const invalid = [
 ];
 // #endregion Invalid Test Cases
 
-tester.run("sort-custom-properties", rule as never, {
+tester.run("sort-custom-properties", rule, {
   invalid,
   valid,
 });

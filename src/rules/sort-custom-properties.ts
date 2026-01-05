@@ -11,11 +11,6 @@ const createRule = ESLintUtils.RuleCreator((name) => name);
 const BLOCK_SELECTOR =
   "Rule > Block, AtRule[name='theme'] > Block, AtRule[name='utility'] > Block";
 
-export const MESSAGE_IDS = {
-  missingEmptyLineBetweenGroups: "missingEmptyLineBetweenGroups",
-  unsortedCustomProperties: "unsortedCustomProperties",
-} as const;
-
 const defaultOrder = [
   "^--spacing-",
   "^--size-",
@@ -30,8 +25,13 @@ const defaultOrder = [
   "^--color-",
 ];
 
-type MessageIds = (typeof MESSAGE_IDS)[keyof typeof MESSAGE_IDS];
-type Options = [
+export const MESSAGE_IDS = {
+  missingEmptyLineBetweenGroups: "missingEmptyLineBetweenGroups",
+  unsortedCustomProperties: "unsortedCustomProperties",
+} as const;
+
+export type MessageIds = (typeof MESSAGE_IDS)[keyof typeof MESSAGE_IDS];
+export type Options = [
   {
     /**
      * Add empty line between different prefix groups
