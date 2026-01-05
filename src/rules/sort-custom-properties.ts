@@ -27,6 +27,7 @@ const defaultOrder = [
 
 export const MESSAGE_IDS = {
   missingEmptyLineBetweenGroups: "missingEmptyLineBetweenGroups",
+  patternTooLong: "patternTooLong",
   unsortedCustomProperties: "unsortedCustomProperties",
 } as const;
 
@@ -70,6 +71,8 @@ export const rule = createRule<Options, MessageIds>({
     messages: {
       missingEmptyLineBetweenGroups:
         "Expected empty line between different custom property prefix groups",
+      patternTooLong:
+        "The pattern '{{pattern}}' is too long and may cause performance issues",
       unsortedCustomProperties:
         "Custom properties should be sorted by the defined order: {{order}}",
     },
@@ -110,6 +113,16 @@ export const rule = createRule<Options, MessageIds>({
     const { sourceCode } = context;
 
     const compiledOrder = order.map((pattern) => {
+      if (pattern.length > 100) {
+        context.report({
+          data: { pattern },
+          loc: { column: 1, line: 1 },
+          messageId: MESSAGE_IDS.patternTooLong,
+        });
+
+        return /(?!)/; // Matches nothing
+      }
+
       try {
         return new RegExp(pattern);
       } catch {
@@ -119,7 +132,7 @@ export const rule = createRule<Options, MessageIds>({
     });
 
     const getMatchingOrderIndex = (propName: string): number => {
-      for (let i = 0; i < order.length; i++) {
+      for (let i = 0; i < compiledOrder.length; i++) {
         if (compiledOrder[i].test(propName)) {
           return i;
         }
@@ -173,9 +186,11 @@ export const rule = createRule<Options, MessageIds>({
           : MESSAGE_IDS.missingEmptyLineBetweenGroups;
 
         context.report({
-          data: {
-            order: order.join(", "),
-          },
+          ...(messageId === MESSAGE_IDS.unsortedCustomProperties && {
+            data: {
+              order: compiledOrder.join(", "),
+            },
+          }),
           fix: (fixer) => {
             const sorted = [...currentBlockProperties].sort((a, b) => {
               if (a.orderIndex !== b.orderIndex) {
