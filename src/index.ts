@@ -7,7 +7,7 @@ import {
 import { rules } from "./rules/index.js";
 
 type PluginConfigs = {
-  recommended: Linter.Config;
+  recommended: Linter.Config[];
 };
 
 const pluginName = "tailwind-variants";
@@ -21,16 +21,29 @@ const plugin = {
 } as ESLint.Plugin;
 
 export const configs: PluginConfigs = {
-  recommended: {
-    plugins: {
-      [pluginName]: plugin,
+  recommended: [
+    {
+      plugins: {
+        [pluginName]: plugin,
+      },
+      rules: {
+        [`${pluginName}/limited-inline-classes`]: "error",
+        [`${pluginName}/require-variants-call-styles-name`]: "error",
+        [`${pluginName}/require-variants-suffix`]: "error",
+      },
     },
-    rules: {
-      [`${pluginName}/limited-inline-classes`]: "error",
-      [`${pluginName}/require-variants-call-styles-name`]: "error",
-      [`${pluginName}/require-variants-suffix`]: "error",
+    {
+      files: ["**/*.css"],
+      rules: {
+        [`${pluginName}/sort-custom-properties`]: [
+          "error",
+          {
+            emptyLineBetweenGroups: true,
+          },
+        ],
+      },
     },
-  },
+  ],
 };
 
 export { plugin };
