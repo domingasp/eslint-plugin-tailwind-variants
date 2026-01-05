@@ -13,9 +13,11 @@ export default defineConfig([
     plugins: { js },
   },
   tseslint.configs.recommended,
-  perfectionist.configs["recommended-natural"],
   {
+    ...perfectionist.configs["recommended-natural"],
+    files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
     rules: {
+      ...perfectionist.configs["recommended-natural"].rules,
       "perfectionist/sort-objects": [
         "error",
         {
