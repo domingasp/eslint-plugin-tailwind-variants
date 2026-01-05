@@ -1,3 +1,4 @@
+import css from "@eslint/css";
 import { ESLint, Linter } from "eslint";
 
 import {
@@ -34,6 +35,8 @@ export const configs: PluginConfigs = {
     },
     {
       files: ["**/*.css"],
+      language: "css/css",
+      plugins: { css },
       rules: {
         [`${pluginName}/sort-custom-properties`]: [
           "error",
