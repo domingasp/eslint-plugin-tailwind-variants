@@ -673,6 +673,25 @@ const invalid: InvalidTestCase<MessageIds, Options>[] = [
 			}
 		`,
   },
+  // Pattern too long tests
+  {
+    code: `
+			:root {
+				--color-primary: #007bff;
+				--font-family: Arial;
+			}
+		`,
+    errors: [{ messageId: MESSAGE_IDS.patternTooLong }],
+    filename: "styles.css",
+    name: "Pattern longer than 100 characters should trigger pattern too long error",
+    options: [
+      {
+        order: [
+          "^--this-is-a-very-long-pattern-that-exceeds-one-hundred-characters-and-should-trigger-the-pattern-too-long-error-message-because-it-is-way-too-long-for-performance-reasons$",
+        ],
+      },
+    ],
+  },
 ];
 // #endregion Invalid Test Cases
 

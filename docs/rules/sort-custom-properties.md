@@ -4,7 +4,7 @@ sidebarDepth: 0
 title: tailwind-variants/sort-custom-properties
 description: enforce consistent ordering of CSS custom properties (CSS variables)
 frameworks: agnostic
-since: v1.1.0
+since: v2.0.0
 ---
 
 # tailwind-variants/sort-custom-properties
@@ -269,7 +269,7 @@ After auto-fix:
 
 ## :rocket: Version
 
-This rule was introduced in eslint-plugin-tailwind-variants v1.1.0
+This rule was introduced in eslint-plugin-tailwind-variants v2.0.0
 
 ## :mag: Implementation
 
