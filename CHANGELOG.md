@@ -1,3 +1,9 @@
+## [2.0.1](https://github.com/domingasp/eslint-plugin-tailwind-variants/compare/v2.0.0...v2.0.1) (2026-01-05)
+
+### Bug Fixes
+
+* add css parser to recommended config ([b15ed0a](https://github.com/domingasp/eslint-plugin-tailwind-variants/commit/b15ed0ac137a3f69631d030d36c97ef8da2e4138))
+
 ## [2.0.0](https://github.com/domingasp/eslint-plugin-tailwind-variants/compare/v1.0.2...v2.0.0) (2026-01-05)
 
 ### ⚠ BREAKING CHANGES
