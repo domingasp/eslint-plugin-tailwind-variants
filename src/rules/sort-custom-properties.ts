@@ -188,7 +188,7 @@ export const rule = createRule<Options, MessageIds>({
         context.report({
           ...(messageId === MESSAGE_IDS.unsortedCustomProperties && {
             data: {
-              order: compiledOrder.join(", "),
+              order: order.join(", "),
             },
           }),
           fix: (fixer) => {
