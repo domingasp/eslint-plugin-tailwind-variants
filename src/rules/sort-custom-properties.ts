@@ -60,6 +60,22 @@ export type Options = [
   }
 ];
 
+type NodeWithOffset = TSESTree.Node & {
+  loc: TSESTree.SourceLocation & {
+    end: TSESTree.Position & { offset: number };
+    start: TSESTree.Position & { offset: number };
+  };
+};
+
+function isNodeWithOffset(node: TSESTree.Node): node is NodeWithOffset {
+  return (
+    node.loc != null &&
+    typeof (node.loc.start as NodeWithOffset["loc"]["start"]).offset ===
+      "number" &&
+    typeof (node.loc.end as NodeWithOffset["loc"]["end"]).offset === "number"
+  );
+}
+
 export const rule = createRule<Options, MessageIds>({
   name: "sort-custom-properties",
   meta: {
@@ -199,23 +215,34 @@ export const rule = createRule<Options, MessageIds>({
               return a.property.localeCompare(b.property);
             });
 
-            const getFullLine = (node: TSESTree.Node) => {
-              const lines = sourceCode.lines;
-              const startLine = node.loc.start.line - 1;
-              return lines[startLine];
+            const allNodesHaveOffsets = sorted.every((item) =>
+              isNodeWithOffset(item.node)
+            );
+            if (!allNodesHaveOffsets) return null;
+
+            const getFullDeclaration = (node: NodeWithOffset) => {
+              const lineStartIndex = sourceCode.getIndexFromLoc({
+                column: 1,
+                line: node.loc.start.line,
+              });
+              const endIndex = node.loc.end.offset + 1; // Include semicolon
+              return sourceCode.text.slice(lineStartIndex, endIndex);
             };
 
             const fixes = currentBlockProperties.map((prop, index) => {
               const sortedNode = sorted[index].node;
-              const sortedLine = getFullLine(sortedNode);
+              const sortedDeclaration = getFullDeclaration(
+                sortedNode as NodeWithOffset
+              );
 
+              // Column is 1-based in ESLint loc
               const currentLineStart = sourceCode.getIndexFromLoc({
                 column: 1,
                 line: prop.node.loc.start.line,
               });
               const currentLineEnd = sourceCode.getIndexFromLoc({
                 column: 1,
-                line: prop.node.loc.start.line + 1,
+                line: prop.node.loc.end.line + 1,
               });
 
               let replacement = "";
@@ -229,7 +256,7 @@ export const rule = createRule<Options, MessageIds>({
                 }
               }
 
-              replacement += sortedLine + "\n";
+              replacement += sortedDeclaration + "\n";
 
               return fixer.replaceTextRange(
                 [currentLineStart, currentLineEnd],
