@@ -240,9 +240,16 @@ export const rule = createRule<Options, MessageIds>({
                 column: 1,
                 line: prop.node.loc.start.line,
               });
+
+              let endLine = prop.node.loc.end.line + 1;
+              const nextProp = currentBlockProperties[index + 1];
+              if (nextProp) {
+                endLine = nextProp.node.loc.start.line;
+              }
+
               const currentLineEnd = sourceCode.getIndexFromLoc({
                 column: 1,
-                line: prop.node.loc.end.line + 1,
+                line: endLine,
               });
 
               let replacement = "";
