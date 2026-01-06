@@ -1,3 +1,9 @@
+## [2.0.2](https://github.com/domingasp/eslint-plugin-tailwind-variants/compare/v2.0.1...v2.0.2) (2026-01-06)
+
+### Bug Fixes
+
+* multi line declaration sorting ([e00fc0e](https://github.com/domingasp/eslint-plugin-tailwind-variants/commit/e00fc0ec262b45d57142f8a1771ccdf1122b824b))
+
 ## [2.0.1](https://github.com/domingasp/eslint-plugin-tailwind-variants/compare/v2.0.0...v2.0.1) (2026-01-05)
 
 ### Bug Fixes
