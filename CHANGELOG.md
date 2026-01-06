@@ -1,3 +1,9 @@
+## [2.0.3](https://github.com/domingasp/eslint-plugin-tailwind-variants/compare/v2.0.2...v2.0.3) (2026-01-06)
+
+### Bug Fixes
+
+* unexpected lines between same catergories ([d9fe504](https://github.com/domingasp/eslint-plugin-tailwind-variants/commit/d9fe5043a6f18df71cd787d099b85b9fb331c3c3))
+
 ## [2.0.2](https://github.com/domingasp/eslint-plugin-tailwind-variants/compare/v2.0.1...v2.0.2) (2026-01-06)
 
 ### Bug Fixes
