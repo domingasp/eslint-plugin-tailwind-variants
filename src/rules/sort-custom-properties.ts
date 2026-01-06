@@ -1,5 +1,4 @@
 import { ESLintUtils, TSESTree } from "@typescript-eslint/utils";
-import { RuleFix } from "@typescript-eslint/utils/ts-eslint";
 
 interface CustomProperty {
   node: TSESTree.Node;
@@ -230,42 +229,40 @@ export const rule = createRule<Options, MessageIds>({
               return sourceCode.text.slice(lineStartIndex, endIndex);
             };
 
-            const fixes = currentBlockProperties
-              .map((prop, index) => {
-                const sortedNode = sorted[index].node;
-                const sortedDeclaration = getFullDeclaration(
-                  sortedNode as NodeWithOffset
-                );
+            const fixes = currentBlockProperties.map((prop, index) => {
+              const sortedNode = sorted[index].node;
+              const sortedDeclaration = getFullDeclaration(
+                sortedNode as NodeWithOffset
+              );
 
-                // Column is 1-based in ESLint loc
-                const currentLineStart = sourceCode.getIndexFromLoc({
-                  column: 1,
-                  line: prop.node.loc.start.line,
-                });
-                const currentLineEnd = sourceCode.getIndexFromLoc({
-                  column: 1,
-                  line: prop.node.loc.end.line + 1,
-                });
+              // Column is 1-based in ESLint loc
+              const currentLineStart = sourceCode.getIndexFromLoc({
+                column: 1,
+                line: prop.node.loc.start.line,
+              });
+              const currentLineEnd = sourceCode.getIndexFromLoc({
+                column: 1,
+                line: prop.node.loc.end.line + 1,
+              });
 
-                let replacement = "";
+              let replacement = "";
 
-                if (emptyLineBetweenGroups && index > 0) {
-                  const prevOrderIndex = sorted[index - 1].orderIndex;
-                  const currOrderIndex = sorted[index].orderIndex;
+              if (emptyLineBetweenGroups && index > 0) {
+                const prevOrderIndex = sorted[index - 1].orderIndex;
+                const currOrderIndex = sorted[index].orderIndex;
 
-                  if (prevOrderIndex !== currOrderIndex) {
-                    replacement = "\n";
-                  }
+                if (prevOrderIndex !== currOrderIndex) {
+                  replacement = "\n";
                 }
+              }
 
-                replacement += sortedDeclaration + "\n";
+              replacement += sortedDeclaration + "\n";
 
-                return fixer.replaceTextRange(
-                  [currentLineStart, currentLineEnd],
-                  replacement
-                );
-              })
-              .filter((fix): fix is RuleFix => fix !== null);
+              return fixer.replaceTextRange(
+                [currentLineStart, currentLineEnd],
+                replacement
+              );
+            });
 
             return fixes;
           },
