@@ -16,6 +16,10 @@ ESLint plugin to enforce best practices and consistent naming conventions for ta
 
 Automatically enforces proper variable naming, limits excessive inline classes, and promotes clean tv() usage with auto-fix support. This plugin supports a wide range of projects, including React, Vue, plain JavaScript or TypeScript.
 
+<div align="center">
+  <img alt="eslint-plugin-tailwind-variants demo" width="500px" src="./.github/assets/eslint-plugin-tailwind-variants-demo.png" />
+</div>
+
 ## Installation
 
 ```sh
