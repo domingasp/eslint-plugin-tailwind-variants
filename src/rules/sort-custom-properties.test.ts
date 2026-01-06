@@ -549,6 +549,47 @@ const invalid: InvalidTestCase<MessageIds, Options>[] = [
 			}
 		`,
   },
+  {
+    code: `
+			:root {
+				--color-primary: #fff;
+
+				--spacing-sm-md: 0.6rem;
+
+
+				--spacing-xs: 0.25rem;
+
+				--spacing-sm: 0.5rem;
+
+
+				
+				--spacing-md: 0.75rem;
+
+				--spacing-lg: 1rem;
+
+				--spacing-xl: 1.5rem;
+
+				--spacing-2xl: 2rem;
+			}
+		`,
+    errors: [{ messageId: MESSAGE_IDS.unsortedCustomProperties }],
+    filename: "styles.css",
+    name: "Properties with same order pattern in wrong alphabetical order with pre-existing empty lines",
+    options: [{ emptyLineBetweenGroups: true }],
+    output: `
+			:root {
+				--spacing-2xl: 2rem;
+				--spacing-lg: 1rem;
+				--spacing-md: 0.75rem;
+				--spacing-sm: 0.5rem;
+				--spacing-sm-md: 0.6rem;
+				--spacing-xl: 1.5rem;
+				--spacing-xs: 0.25rem;
+
+				--color-primary: #fff;
+			}
+		`,
+  },
   // Nested blocks
   {
     code: `
