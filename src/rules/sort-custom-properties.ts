@@ -216,6 +216,11 @@ export const rule = createRule<Options, MessageIds>({
               return a.property.localeCompare(b.property);
             });
 
+            const allNodesHaveOffsets = sorted.every((item) =>
+              isNodeWithOffset(item.node)
+            );
+            if (!allNodesHaveOffsets) return null;
+
             const getFullDeclaration = (node: NodeWithOffset) => {
               const lineStartIndex = sourceCode.getIndexFromLoc({
                 column: 1,
@@ -228,11 +233,9 @@ export const rule = createRule<Options, MessageIds>({
             const fixes = currentBlockProperties
               .map((prop, index) => {
                 const sortedNode = sorted[index].node;
-
-                if (!isNodeWithOffset(sortedNode)) {
-                  return null;
-                }
-                const sortedDeclaration = getFullDeclaration(sortedNode);
+                const sortedDeclaration = getFullDeclaration(
+                  sortedNode as NodeWithOffset
+                );
 
                 // Column is 1-based in ESLint loc
                 const currentLineStart = sourceCode.getIndexFromLoc({
