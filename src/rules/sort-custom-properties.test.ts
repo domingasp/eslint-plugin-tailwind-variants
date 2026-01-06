@@ -431,6 +431,33 @@ const invalid: InvalidTestCase<MessageIds, Options>[] = [
 			}
 		`,
   },
+  {
+    code: `
+			:root {
+				--color-fill-brand-hover: oklch(
+					from var(--color-fill-brand) calc(l + 0.1) c h
+				);
+				--spacing-lg: 2rem;
+				--color-fill-brand-active: oklch(
+					from var(--color-fill-brand) calc(l + 0.15) c h
+				);
+			}
+		`,
+    errors: [{ messageId: MESSAGE_IDS.unsortedCustomProperties }],
+    filename: "styles.css",
+    name: "Multi-line unsorted properties",
+    output: `
+			:root {
+				--spacing-lg: 2rem;
+				--color-fill-brand-active: oklch(
+					from var(--color-fill-brand) calc(l + 0.15) c h
+				);
+				--color-fill-brand-hover: oklch(
+					from var(--color-fill-brand) calc(l + 0.1) c h
+				);
+			}
+		`,
+  },
   // Empty line between groups tests
   {
     code: `

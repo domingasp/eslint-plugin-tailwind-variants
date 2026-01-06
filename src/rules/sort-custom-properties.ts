@@ -1,4 +1,5 @@
 import { ESLintUtils, TSESTree } from "@typescript-eslint/utils";
+import { RuleFix } from "@typescript-eslint/utils/ts-eslint";
 
 interface CustomProperty {
   node: TSESTree.Node;
@@ -59,6 +60,22 @@ export type Options = [
     order?: string[];
   }
 ];
+
+type NodeWithOffset = TSESTree.Node & {
+  loc: TSESTree.SourceLocation & {
+    end: TSESTree.Position & { offset: number };
+    start: TSESTree.Position & { offset: number };
+  };
+};
+
+function isNodeWithOffset(node: TSESTree.Node): node is NodeWithOffset {
+  return (
+    node.loc != null &&
+    typeof (node.loc.start as NodeWithOffset["loc"]["start"]).offset ===
+      "number" &&
+    typeof (node.loc.end as NodeWithOffset["loc"]["end"]).offset === "number"
+  );
+}
 
 export const rule = createRule<Options, MessageIds>({
   name: "sort-custom-properties",
@@ -199,43 +216,53 @@ export const rule = createRule<Options, MessageIds>({
               return a.property.localeCompare(b.property);
             });
 
-            const getFullLine = (node: TSESTree.Node) => {
-              const lines = sourceCode.lines;
-              const startLine = node.loc.start.line - 1;
-              return lines[startLine];
+            const getFullDeclaration = (node: NodeWithOffset) => {
+              const lineStartIndex = sourceCode.getIndexFromLoc({
+                column: 1,
+                line: node.loc.start.line,
+              });
+              const endIndex = node.loc.end.offset + 1; // Include semicolon
+              return sourceCode.text.slice(lineStartIndex, endIndex);
             };
 
-            const fixes = currentBlockProperties.map((prop, index) => {
-              const sortedNode = sorted[index].node;
-              const sortedLine = getFullLine(sortedNode);
+            const fixes = currentBlockProperties
+              .map((prop, index) => {
+                const sortedNode = sorted[index].node;
 
-              const currentLineStart = sourceCode.getIndexFromLoc({
-                column: 1,
-                line: prop.node.loc.start.line,
-              });
-              const currentLineEnd = sourceCode.getIndexFromLoc({
-                column: 1,
-                line: prop.node.loc.start.line + 1,
-              });
-
-              let replacement = "";
-
-              if (emptyLineBetweenGroups && index > 0) {
-                const prevOrderIndex = sorted[index - 1].orderIndex;
-                const currOrderIndex = sorted[index].orderIndex;
-
-                if (prevOrderIndex !== currOrderIndex) {
-                  replacement = "\n";
+                if (!isNodeWithOffset(sortedNode)) {
+                  return null;
                 }
-              }
+                const sortedDeclaration = getFullDeclaration(sortedNode);
 
-              replacement += sortedLine + "\n";
+                // Column is 1-based in ESLint loc
+                const currentLineStart = sourceCode.getIndexFromLoc({
+                  column: 1,
+                  line: prop.node.loc.start.line,
+                });
+                const currentLineEnd = sourceCode.getIndexFromLoc({
+                  column: 1,
+                  line: prop.node.loc.end.line + 1,
+                });
 
-              return fixer.replaceTextRange(
-                [currentLineStart, currentLineEnd],
-                replacement
-              );
-            });
+                let replacement = "";
+
+                if (emptyLineBetweenGroups && index > 0) {
+                  const prevOrderIndex = sorted[index - 1].orderIndex;
+                  const currOrderIndex = sorted[index].orderIndex;
+
+                  if (prevOrderIndex !== currOrderIndex) {
+                    replacement = "\n";
+                  }
+                }
+
+                replacement += sortedDeclaration + "\n";
+
+                return fixer.replaceTextRange(
+                  [currentLineStart, currentLineEnd],
+                  replacement
+                );
+              })
+              .filter((fix): fix is RuleFix => fix !== null);
 
             return fixes;
           },
