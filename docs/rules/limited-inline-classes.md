@@ -21,10 +21,13 @@ The goal is to encourage the use of `tailwind-variants` for complex styling inst
 
 ```json
 {
-  "tailwind-variants/limited-inline-classes": ["error", {
-    "maxInlineClasses": 5,
-    "directoryPattern": "/components/"
-  }]
+  "tailwind-variants/limited-inline-classes": [
+    "error",
+    {
+      "maxInlineClasses": 5,
+      "directoryPattern": "/components/"
+    }
+  ]
 }
 ```
 
@@ -61,9 +64,7 @@ The goal is to encourage the use of `tailwind-variants` for complex styling inst
 
 ```jsx
 /* ✓ GOOD */
-const Button = () => (
-  <div className="bg-red-500 text-white p-2"></div>
-);
+const Button = () => <div className="bg-red-500 text-white p-2"></div>;
 ```
 
 </eslint-code-block>
@@ -72,9 +73,7 @@ const Button = () => (
 
 ```jsx
 /* ✗ BAD */
-const Button = () => (
-  <div className="bg-red-500 text-white p-2 m-1"></div>
-);
+const Button = () => <div className="bg-red-500 text-white p-2 m-1"></div>;
 ```
 
 </eslint-code-block>
@@ -127,12 +126,10 @@ This rule prohibits the use of `cn()` function calls in className attributes, re
 
 ```jsx
 /* ✗ BAD */
-const Button = () => (
-  <div className={cn('bg-red-500', 'text-white')}></div>
-);
+const Button = () => <div className={cn("bg-red-500", "text-white")}></div>;
 
 const Button = () => (
-  <div className={`base ${cn('bg-red-500', 'text-white')}`}></div>
+  <div className={`base ${cn("bg-red-500", "text-white")}`}></div>
 );
 ```
 

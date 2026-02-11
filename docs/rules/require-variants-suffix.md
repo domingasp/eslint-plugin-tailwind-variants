@@ -19,9 +19,12 @@ This rule enforces that variables assigned from `tv()` function calls must end w
 
 ```json
 {
-  "tailwind-variants/require-variants-suffix": ["error", {
-    "suffix": "Variants"
-  }]
+  "tailwind-variants/require-variants-suffix": [
+    "error",
+    {
+      "suffix": "Variants"
+    }
+  ]
 }
 ```
 
@@ -37,9 +40,9 @@ const buttonVariants = tv({
   base: "font-medium",
   variants: {
     color: {
-      primary: "bg-blue-500"
-    }
-  }
+      primary: "bg-blue-500",
+    },
+  },
 });
 
 const cardVariants = tv({});
@@ -55,9 +58,9 @@ const button = tv({
   base: "font-medium",
   variants: {
     color: {
-      primary: "bg-blue-500"
-    }
-  }
+      primary: "bg-blue-500",
+    },
+  },
 });
 
 const card = tv({});
@@ -75,9 +78,9 @@ const buttonStyles = tv({
   base: "font-medium",
   variants: {
     color: {
-      primary: "bg-blue-500"
-    }
-  }
+      primary: "bg-blue-500",
+    },
+  },
 });
 ```
 
@@ -91,9 +94,9 @@ const button = tv({
   base: "font-medium",
   variants: {
     color: {
-      primary: "bg-blue-500"
-    }
-  }
+      primary: "bg-blue-500",
+    },
+  },
 });
 
 const buttonVariants = tv({}); // Wrong suffix
@@ -106,11 +109,13 @@ const buttonVariants = tv({}); // Wrong suffix
 This rule provides auto-fix functionality. When a variable name doesn't end with the required suffix, the fixer will automatically append the suffix to the variable name.
 
 Before:
+
 ```jsx
 const button = tv({});
 ```
 
 After auto-fix (with default suffix):
+
 ```jsx
 const buttonVariants = tv({});
 ```
