@@ -1,0 +1,28 @@
+{
+	"name": "Ubuntu",
+	"image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+	"features": {
+		"ghcr.io/devcontainers-extra/features/pnpm:2": {}
+	},
+	"postCreateCommand": "pnpm install",
+	"customizations": {
+		"vscode": {
+      "settings": {
+        "json.schemaDownload.trustedDomains": {
+          "https://schemastore.azurewebsites.net/": true,
+          "https://raw.githubusercontent.com/": true,
+          "https://www.schemastore.org/": true,
+          "https://json.schemastore.org/": true,
+          "https://json-schema.org/": true,
+          "https://unpkg.com": true
+        },
+        "editor.rulers": [80]
+      },
+			"extensions": [
+				"EditorConfig.EditorConfig",
+				"streetsidesoftware.code-spell-checker",
+				"vivaxy.vscode-conventional-commits"
+			]
+		}
+	}
+}
