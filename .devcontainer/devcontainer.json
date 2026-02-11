@@ -1,12 +1,12 @@
 {
-	"name": "Ubuntu",
-	"image": "mcr.microsoft.com/devcontainers/base:ubuntu",
-	"features": {
-		"ghcr.io/devcontainers-extra/features/pnpm:2": {}
-	},
-	"postCreateCommand": "pnpm install",
-	"customizations": {
-		"vscode": {
+  "name": "Ubuntu",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {
+    "ghcr.io/devcontainers-extra/features/pnpm:2": {}
+  },
+  "postCreateCommand": "pnpm install",
+  "customizations": {
+    "vscode": {
       "settings": {
         "json.schemaDownload.trustedDomains": {
           "https://schemastore.azurewebsites.net/": true,
@@ -16,13 +16,22 @@
           "https://json-schema.org/": true,
           "https://unpkg.com": true
         },
-        "editor.rulers": [80]
+        "editor.rulers": [80],
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll.oxc": "explicit"
+        },
+        "oxc.typeAware": true,
+        "oxc.fmt.configPath": ".oxfmtrc.json",
+        "editor.defaultFormatter": "oxc.oxc-vscode"
       },
-			"extensions": [
-				"EditorConfig.EditorConfig",
-				"streetsidesoftware.code-spell-checker",
-				"vivaxy.vscode-conventional-commits"
-			]
-		}
-	}
+      "extensions": [
+        "EditorConfig.EditorConfig",
+        "streetsidesoftware.code-spell-checker",
+        "vivaxy.vscode-conventional-commits",
+        "webpro.vscode-knip",
+        "oxc.oxc-vscode"
+      ]
+    }
+  }
 }

@@ -21,10 +21,25 @@ The rule works with various CSS syntaxes including standard CSS, Tailwind CSS `@
 
 ```json
 {
-  "tailwind-variants/sort-custom-properties": ["error", {
-    "order": ["^--spacing-", "^--size-", "^--font-", "^--weight-", "^--leading-", "^--tracking-", "^--radius-", "^--shadow-", "^--animate-", "^--transition-", "^--color-"],
-    "emptyLineBetweenGroups": false
-  }]
+  "tailwind-variants/sort-custom-properties": [
+    "error",
+    {
+      "order": [
+        "^--spacing-",
+        "^--size-",
+        "^--font-",
+        "^--weight-",
+        "^--leading-",
+        "^--tracking-",
+        "^--radius-",
+        "^--shadow-",
+        "^--animate-",
+        "^--transition-",
+        "^--color-"
+      ],
+      "emptyLineBetweenGroups": false
+    }
+  ]
 }
 ```
 
@@ -245,11 +260,13 @@ The rule supports various regex patterns for flexible ordering:
 ## :wrench: Auto-fix
 
 This rule provides auto-fix functionality. It will automatically:
+
 - Reorder custom properties according to the configured pattern order
 - Sort properties alphabetically within each group
 - Add or remove empty lines between groups when `emptyLineBetweenGroups` is configured
 
 Before:
+
 ```css
 :root {
   --color-primary: #007bff;
@@ -259,6 +276,7 @@ Before:
 ```
 
 After auto-fix:
+
 ```css
 :root {
   --spacing-lg: 2rem;
