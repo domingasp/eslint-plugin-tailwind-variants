@@ -19,9 +19,12 @@ This rule enforces that when you call a function returned by `tv()` (from tailwi
 
 ```json
 {
-	"tailwind-variants/require-variants-call-styles-name": ["error", {
-		"name": "styles"
-	}]
+  "tailwind-variants/require-variants-call-styles-name": [
+    "error",
+    {
+      "name": "styles"
+    }
+  ]
 }
 ```
 
@@ -98,12 +101,14 @@ const styles = buttonVariants();
 This rule provides auto-fix functionality. When a variable name assigned from calling a variant function does not match the configured value, the fixer will automatically replace the name.
 
 Before:
+
 ```jsx
 const buttonVariants = tv({});
 const button = buttonVariants();
 ```
 
 After auto-fix (with default name):
+
 ```jsx
 const buttonVariants = tv({});
 const styles = buttonVariants();

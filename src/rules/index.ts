@@ -1,4 +1,4 @@
-import { ESLint } from "eslint";
+import type { ESLint } from "eslint";
 
 import { rule as limitedInlineClasses } from "./limited-inline-classes.js";
 import { rule as requireVariantsCallStylesName } from "./require-variants-call-styles-name.js";
@@ -11,5 +11,5 @@ export const rules = {
   "require-variants-suffix": requireVariantsSuffix,
   "sort-custom-properties": sortCustomProperties,
 
-  // as unknown due to ESLint and TSESLint types not aligning perfectly
+  // As unknown due to ESLint and TSESLint types not aligning perfectly
 } as unknown as ESLint.Plugin["rules"];
