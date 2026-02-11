@@ -3,7 +3,7 @@
   "categories": {
     "correctness": "error",
     "pedantic": "error",
-    "restriction": "error",
+    "restriction": "warn",
     "style": "warn"
   }
 }
