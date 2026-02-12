@@ -11,6 +11,15 @@
     "oxc/no-optional-chaining": "off",
     // Sort handled by oxfmt
     "sort-imports": "off",
-    "unicorn/no-typeof-undefined": "off"
-  }
+    "unicorn/no-typeof-undefined": "off",
+    "eslint/no-console": "off"
+  },
+  "overrides": [
+    {
+      "files": ["**/rules/*.ts"],
+      "rules": {
+        "max-lines": "off"
+      }
+    }
+  ]
 }

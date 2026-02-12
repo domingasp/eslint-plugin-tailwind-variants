@@ -1,5 +1,3 @@
-// oxlint-disable max-lines
-
 import css from "@eslint/css";
 import {
   type InvalidTestCase,
