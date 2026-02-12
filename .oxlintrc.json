@@ -12,7 +12,19 @@
     // Sort handled by oxfmt
     "sort-imports": "off",
     "unicorn/no-typeof-undefined": "off",
-    "eslint/no-console": "off"
+    "eslint/no-console": "off",
+    "eslint/id-length": [
+      "warn",
+      {
+        "exceptions": ["i", "a", "b"]
+      }
+    ],
+    "eslint/no-magic-numbers": [
+      "warn",
+      {
+        "ignore": [0, 1, -1]
+      }
+    ]
   },
   "overrides": [
     {
