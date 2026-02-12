@@ -33,6 +33,7 @@ const DEFAULT_ORDER = [
 ];
 
 export const MESSAGE_IDS = {
+  invalidPattern: "invalidPattern",
   missingEmptyLineBetweenGroups: "missingEmptyLineBetweenGroups",
   patternTooLong: "patternTooLong",
   unsortedCustomProperties: "unsortedCustomProperties",
@@ -103,6 +104,11 @@ const compilePattern = (
   try {
     return new RegExp(pattern);
   } catch {
+    context.report({
+      data: { pattern },
+      loc: { column: 1, line: 1 },
+      messageId: MESSAGE_IDS.invalidPattern,
+    });
     // Fallback: escape special chars and treat as a prefix match
     return new RegExp(
       `^${pattern.replaceAll(SPECIAL_REGEX_CHARS, String.raw`\$&`)}`,
@@ -481,6 +487,8 @@ export const rule = createRule<Options, MessageIds>({
     },
     fixable: "code",
     messages: {
+      invalidPattern:
+        "The pattern '{{pattern}}' is not a valid regular expression",
       missingEmptyLineBetweenGroups:
         "Expected empty line between different custom property prefix groups",
       patternTooLong:
