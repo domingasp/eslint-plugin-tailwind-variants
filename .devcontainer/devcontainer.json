@@ -24,7 +24,7 @@
         "oxc.typeAware": true,
         "oxc.fmt.configPath": ".oxfmtrc.json",
         "editor.defaultFormatter": "oxc.oxc-vscode",
-        "cSpell.words": ["TSES"]
+        "cSpell.words": ["TSES", "oxlint", "oxfmt", "oklch", "lightgray"]
       },
       "extensions": [
         "EditorConfig.EditorConfig",
