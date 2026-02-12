@@ -5,5 +5,12 @@
     "pedantic": "error",
     "restriction": "warn",
     "style": "warn"
+  },
+  "rules": {
+    "new-cap": ["warn", { "capIsNewExceptions": ["RuleCreator"] }],
+    "oxc/no-optional-chaining": "off",
+    // Sort handled by oxfmt
+    "sort-imports": "off",
+    "unicorn/no-typeof-undefined": "off"
   }
 }
