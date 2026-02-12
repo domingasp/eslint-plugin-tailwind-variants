@@ -156,7 +156,12 @@ const validateTemplateLiteral = (
   // oxlint-disable-next-line no-magic-numbers
   if (expr.expressions.length === 0) {
     const [firstQuasi] = expr.quasis;
-    const raw = firstQuasi?.value.cooked ?? "";
+    const raw = firstQuasi?.value.cooked;
+    if (raw === null || typeof raw === "undefined") {
+      // Skip validation for malformed template literals
+      return false;
+    }
+
     if (countClasses(raw) > options.maxInlineClasses) {
       options.context.report({
         data: { max: options.maxInlineClasses.toString() },
@@ -284,6 +289,7 @@ const handleVueStaticClass = (
     context.report({
       data: { max: maxInlineClasses.toString() },
       messageId: MESSAGE_IDS.limitedInlineClasses,
+      // Cast to TSESTree.Node since VAttribute is not directly compatible
       node: vAttr as unknown as TSESTree.Node,
     });
   }
@@ -304,6 +310,7 @@ const handleVueDynamicClass = (
     validateExpression(container.expression as VueAST.ESLintExpression, {
       context,
       maxInlineClasses,
+      // Cast to TSESTree.Node since VAttribute is not directly compatible
       node: vAttr as unknown as TSESTree.Node,
     });
   }
