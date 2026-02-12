@@ -157,7 +157,7 @@ const validateTemplateLiteral = (
   if (expr.expressions.length === 0) {
     const [firstQuasi] = expr.quasis;
     const raw = firstQuasi?.value.cooked;
-    if (raw === null || typeof raw === "undefined") {
+    if (raw === null) {
       // Skip validation for malformed template literals
       return false;
     }
@@ -310,8 +310,7 @@ const handleVueDynamicClass = (
     validateExpression(container.expression as VueAST.ESLintExpression, {
       context,
       maxInlineClasses,
-      // Cast to TSESTree.Node since VAttribute is not directly compatible
-      node: vAttr as unknown as TSESTree.Node,
+      node: vAttr,
     });
   }
 };
