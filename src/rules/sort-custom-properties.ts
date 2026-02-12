@@ -188,8 +188,12 @@ const getFullDeclaration = (
     column: 1,
     line: node.loc.start.line,
   });
-  // Include semicolon
-  const endIndex = node.loc.end.offset + 1;
+
+  let endIndex = node.loc.end.offset;
+  if (sourceCode.text[endIndex] === ";") {
+    endIndex += 1;
+  }
+
   return sourceCode.text.slice(lineStartIndex, endIndex);
 };
 
@@ -334,10 +338,13 @@ const processBlockViolations = (
   config: BlockHandlerConfig,
 ): void => {
   const isSorted = checkIfSorted(currentBlockProperties);
-  const needsEmptyLines = checkEmptyLinesIfRequired(
-    config.emptyLineBetweenGroups,
-    currentBlockProperties,
-  );
+  let needsEmptyLines = false;
+  if (isSorted) {
+    needsEmptyLines = checkEmptyLinesIfRequired(
+      config.emptyLineBetweenGroups,
+      currentBlockProperties,
+    );
+  }
 
   const messageId = getViolationMessageId(isSorted, needsEmptyLines);
   if (!messageId) {

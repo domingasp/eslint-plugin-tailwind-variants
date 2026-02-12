@@ -121,6 +121,8 @@ export const rule = createRule<Options, MessageIds>({
   create: (context) => {
     const [options = {}] = context.options;
     const requiredName = options.name ?? "styles";
+
+    // Tracks by name, not scope—shadowed identifiers may cause false positives
     const variantFunctions = new Set<string>();
 
     const trackVariantFunction = (
