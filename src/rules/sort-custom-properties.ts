@@ -259,6 +259,10 @@ const createSingleFix = ({
     config;
 
   const sortedNode = sorted[index].node;
+  if (!isNodeWithOffset(sortedNode)) {
+    throw new Error("Node missing offset information");
+  }
+
   const sortedDeclaration = getFullDeclaration(
     sortedNode as NodeWithOffset,
     sourceCode,
