@@ -1,9 +1,14 @@
 import { type TSESTree, ESLintUtils } from "@typescript-eslint/utils";
-import type { RuleContext } from "@typescript-eslint/utils/ts-eslint";
+import type {
+  RuleContext,
+  RuleFix,
+  SourceCode,
+} from "@typescript-eslint/utils/ts-eslint";
 
 const createRule = ESLintUtils.RuleCreator((name) => name);
 
 export const MESSAGE_IDS = {
+  renameAllOccurrences: "renameAllOccurrences",
   requireVariantsCallStylesName: "requireVariantsCallStylesName",
 } as const;
 
@@ -28,20 +33,69 @@ const isIdentifier = (
   node: TSESTree.Node | null,
 ): node is TSESTree.Identifier => node?.type === "Identifier";
 
+const collectReferences = (options: {
+  sourceCode: Readonly<SourceCode>;
+  declaratorNode: TSESTree.VariableDeclarator;
+  id: TSESTree.Identifier;
+}): TSESTree.Identifier[] => {
+  const declaredVariables = options.sourceCode.getDeclaredVariables(
+    options.declaratorNode,
+  );
+  const references: TSESTree.Identifier[] = [];
+
+  for (const variable of declaredVariables) {
+    if (variable.name === options.id.name) {
+      for (const reference of variable.references) {
+        if (
+          reference.identifier !== options.id &&
+          reference.identifier.type === "Identifier"
+        ) {
+          references.push(reference.identifier);
+        }
+      }
+      break;
+    }
+  }
+
+  return references;
+};
+
 const reportIncorrectName = (options: {
   context: Context;
   id: TSESTree.Identifier;
-  functionName: string;
   requiredName: string;
+  declaratorNode: TSESTree.VariableDeclarator;
 }): void => {
+  const { sourceCode } = options.context;
+  const references = collectReferences({
+    declaratorNode: options.declaratorNode,
+    id: options.id,
+    sourceCode,
+  });
+
   options.context.report({
     data: {
-      functionName: options.functionName,
       name: options.requiredName,
     },
-    fix: (fixer) => fixer.replaceText(options.id, options.requiredName),
     messageId: MESSAGE_IDS.requireVariantsCallStylesName,
     node: options.id,
+    suggest: [
+      {
+        data: {
+          name: options.requiredName,
+        },
+        fix: (fixer): RuleFix[] => {
+          const fixes = [fixer.replaceText(options.id, options.requiredName)];
+
+          for (const reference of references) {
+            fixes.push(fixer.replaceText(reference, options.requiredName));
+          }
+
+          return fixes;
+        },
+        messageId: MESSAGE_IDS.renameAllOccurrences,
+      },
+    ],
   });
 };
 
@@ -50,14 +104,14 @@ const handleVariantFunctionCall = (options: {
   callee: TSESTree.Identifier;
   id: TSESTree.Identifier;
   requiredName: string;
+  declaratorNode: TSESTree.VariableDeclarator;
 }): void => {
   const variableName = options.id.name;
-  const functionName = options.callee.name;
 
   if (variableName !== options.requiredName) {
     reportIncorrectName({
       context: options.context,
-      functionName,
+      declaratorNode: options.declaratorNode,
       id: options.id,
       requiredName: options.requiredName,
     });
@@ -83,7 +137,7 @@ export const rule = createRule<Options, MessageIds>({
 
     return {
       VariableDeclarator(node): void {
-        const { init, id } = node;
+        const { id, init } = node;
 
         if (
           !init ||
@@ -100,9 +154,10 @@ export const rule = createRule<Options, MessageIds>({
 
         if (variantFunctions.has(init.callee.name)) {
           handleVariantFunctionCall({
-            context,
-            id,
             callee: init.callee,
+            context,
+            declaratorNode: node,
+            id,
             requiredName,
           });
         }
@@ -120,7 +175,9 @@ export const rule = createRule<Options, MessageIds>({
         "Require variables assigned from calling a function returned by tv() to be named {{name}}.",
     },
     fixable: "code",
+    hasSuggestions: true,
     messages: {
+      renameAllOccurrences: "Rename all occurrences to {{name}}",
       requireVariantsCallStylesName:
         "Require variables assigned from calling a function returned by tv() to be named {{name}}.",
     },

@@ -131,19 +131,18 @@ const validateObjectExpression = (
 ): boolean =>
   expr.properties.some((prop) => {
     if (prop.type === AST_NODE_TYPES.Property) {
-      // oxlint-disable-next-line init-declarations
-      let expression: TSESTree.Expression | VueAST.ESLintExpression | undefined;
       if (
-        prop.value !== null &&
-        prop.value.type !== "ObjectPattern" &&
-        prop.value.type !== "ArrayPattern"
+        prop.value === null ||
+        prop.value.type === "ObjectPattern" ||
+        prop.value.type === "ArrayPattern"
       ) {
-        expression = prop.value as
-          | TSESTree.Expression
-          | VueAST.ESLintExpression;
+        return false;
       }
 
-      return validateExpression(expression, options);
+      return validateExpression(
+        prop.value as TSESTree.Expression | VueAST.ESLintExpression,
+        options,
+      );
     }
     return false;
   });
