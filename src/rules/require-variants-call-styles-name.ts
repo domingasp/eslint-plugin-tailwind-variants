@@ -101,7 +101,6 @@ const reportIncorrectName = (options: {
 
 const handleVariantFunctionCall = (options: {
   context: Context;
-  callee: TSESTree.Identifier;
   id: TSESTree.Identifier;
   requiredName: string;
   declaratorNode: TSESTree.VariableDeclarator;
@@ -154,7 +153,6 @@ export const rule = createRule<Options, MessageIds>({
 
         if (variantFunctions.has(init.callee.name)) {
           handleVariantFunctionCall({
-            callee: init.callee,
             context,
             declaratorNode: node,
             id,
@@ -174,7 +172,6 @@ export const rule = createRule<Options, MessageIds>({
       description:
         "Require variables assigned from calling a function returned by tv() to be named {{name}}.",
     },
-    fixable: "code",
     hasSuggestions: true,
     messages: {
       renameAllOccurrences: "Rename all occurrences to {{name}}",

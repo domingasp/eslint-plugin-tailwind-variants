@@ -133,8 +133,8 @@ const validateObjectExpression = (
     if (prop.type === AST_NODE_TYPES.Property) {
       if (
         prop.value === null ||
-        prop.value.type === "ObjectPattern" ||
-        prop.value.type === "ArrayPattern"
+        prop.value.type === AST_NODE_TYPES.ObjectPattern ||
+        prop.value.type === AST_NODE_TYPES.ArrayPattern
       ) {
         return false;
       }
@@ -284,7 +284,7 @@ const handleVueStaticClass = (
     context.report({
       data: { max: maxInlineClasses.toString() },
       messageId: MESSAGE_IDS.limitedInlineClasses,
-      node: vAttr as never,
+      node: vAttr as unknown as TSESTree.Node,
     });
   }
 };
@@ -304,7 +304,7 @@ const handleVueDynamicClass = (
     validateExpression(container.expression as VueAST.ESLintExpression, {
       context,
       maxInlineClasses,
-      node: vAttr,
+      node: vAttr as unknown as TSESTree.Node,
     });
   }
 };

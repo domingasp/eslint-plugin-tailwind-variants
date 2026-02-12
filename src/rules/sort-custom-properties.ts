@@ -69,7 +69,6 @@ export type Options = [
 ];
 
 const MATCHES_NOTHING = /(?!)/;
-const SPECIAL_REGEX_CHARS = /[.*+?^${}()|[\]\\]/g;
 
 type NodeWithOffset = TSESTree.Node & {
   loc: TSESTree.SourceLocation & {
@@ -110,9 +109,7 @@ const compilePattern = (
       messageId: MESSAGE_IDS.invalidPattern,
     });
     // Fallback: escape special chars and treat as a prefix match
-    return new RegExp(
-      `^${pattern.replaceAll(SPECIAL_REGEX_CHARS, String.raw`\$&`)}`,
-    );
+    return MATCHES_NOTHING;
   }
 };
 
@@ -342,7 +339,7 @@ const processBlockViolations = (
     currentBlockProperties,
   );
 
-  const messageId = shouldReport(isSorted, needsEmptyLines);
+  const messageId = getViolationMessageId(isSorted, needsEmptyLines);
   if (!messageId) {
     return;
   }
@@ -361,7 +358,7 @@ const processBlockViolations = (
 };
 
 /** Determine the appropriate message ID based on sorting and spacing */
-const shouldReport = (
+const getViolationMessageId = (
   isSorted: boolean,
   needsEmptyLines: boolean,
 ): MessageIds | undefined => {
