@@ -69,7 +69,7 @@ const validateBinaryExpression = (
     | VueAST.ESLintBinaryExpression,
   options: ValidationOptions,
 ): boolean =>
-  validateExpression(expr.left, options) ??
+  validateExpression(expr.left, options) ||
   validateExpression(expr.right, options);
 
 /** Validate call expression and detect cn() calls */
@@ -101,7 +101,7 @@ const validateConditionalExpression = (
   expr: TSESTree.ConditionalExpression,
   options: ValidationOptions,
 ): boolean =>
-  validateExpression(expr.consequent, options) ??
+  validateExpression(expr.consequent, options) ||
   validateExpression(expr.alternate, options);
 
 /** Validate string literal for class count */
@@ -222,7 +222,6 @@ const validateExpression = (
       return false;
     }
     default: {
-      console.log("Unhandled expression type:", expr.type);
       return false;
     }
   }

@@ -18,7 +18,7 @@ export type Options = [
   },
 ];
 
-type Context = Readonly<RuleContext<"requireVariantsCallStylesName", Options>>;
+type Context = Readonly<RuleContext<MessageIds, Options>>;
 
 const isCallExpression = (
   init: TSESTree.Expression | null,
@@ -47,16 +47,12 @@ const reportIncorrectName = (options: {
 
 const handleVariantFunctionCall = (options: {
   context: Context;
-  init: TSESTree.CallExpression;
+  callee: TSESTree.Identifier;
   id: TSESTree.Identifier;
   requiredName: string;
 }): void => {
-  if (!isIdentifier(options.init.callee)) {
-    return;
-  }
-
   const variableName = options.id.name;
-  const functionName = options.init.callee.name;
+  const functionName = options.callee.name;
 
   if (variableName !== options.requiredName) {
     reportIncorrectName({
@@ -103,7 +99,12 @@ export const rule = createRule<Options, MessageIds>({
         }
 
         if (variantFunctions.has(init.callee.name)) {
-          handleVariantFunctionCall({ context, id, init, requiredName });
+          handleVariantFunctionCall({
+            context,
+            id,
+            callee: init.callee,
+            requiredName,
+          });
         }
       },
     };

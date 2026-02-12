@@ -12,7 +12,6 @@
     // Sort handled by oxfmt
     "sort-imports": "off",
     "unicorn/no-typeof-undefined": "off",
-    "eslint/no-console": "off",
     "eslint/id-length": [
       "warn",
       {

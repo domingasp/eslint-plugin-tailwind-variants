@@ -85,7 +85,7 @@ const isNodeWithOffset = (node: TSESTree.Node): node is NodeWithOffset =>
   typeof (node.loc.end as NodeWithOffset["loc"]["end"]).offset === "number";
 
 /** Validate and compile a regular expression pattern */
-const compilerPattern = (
+const compilePattern = (
   pattern: string,
   context: RuleContext<MessageIds, Options>,
 ): RegExp => {
@@ -114,7 +114,7 @@ const compilerPattern = (
 const compileOrderPatterns = (
   order: string[],
   context: RuleContext<MessageIds, Options>,
-): RegExp[] => order.map((pattern) => compilerPattern(pattern, context));
+): RegExp[] => order.map((pattern) => compilePattern(pattern, context));
 
 /** Return a function to get the order index of a property */
 const createOrderIndexGetter =
@@ -146,7 +146,7 @@ const checkIfSorted = (properties: CustomProperty[]): boolean => {
 };
 
 /** Return if there are empty lines between groups of properties */
-const checkEmptyLinesBetweenGroups = (
+const needsEmptyLinesBetweenGroups = (
   properties: CustomProperty[],
 ): boolean => {
   // Minimum lines between groups to be considered as having empty lines
@@ -322,7 +322,7 @@ const checkEmptyLinesIfRequired = (
     return false;
   }
 
-  return checkEmptyLinesBetweenGroups(currentBlockProperties);
+  return needsEmptyLinesBetweenGroups(currentBlockProperties);
 };
 
 /** Process and report block violations */
@@ -383,23 +383,17 @@ interface ReportConfig {
 /** Create a report descriptor for given configuration */
 const createReportDescriptor = (
   config: ReportConfig,
-): ReportDescriptor<MessageIds> => {
-  const report: ReportDescriptor<MessageIds> = {
-    fix: createFixer(config),
-    messageId: config.messageId,
-    node: config.currentBlockProperties[0].node,
-  };
-
-  if (config.messageId === MESSAGE_IDS.unsortedCustomProperties) {
-    Object.assign(report, {
-      data: {
-        order: config.order.join(", "),
-      },
-    });
-  }
-
-  return report;
-};
+): ReportDescriptor<MessageIds> => ({
+  fix: createFixer(config),
+  messageId: config.messageId,
+  node: config.currentBlockProperties[0].node,
+  // oxlint-disable-next-line oxc/no-rest-spread-properties data is readonly
+  ...(config.messageId === MESSAGE_IDS.unsortedCustomProperties && {
+    data: {
+      order: config.order.join(", "),
+    },
+  }),
+});
 
 /** Configuration object for block handling */
 interface BlockHandlerConfig {
