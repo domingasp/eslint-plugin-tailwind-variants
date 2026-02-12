@@ -1,4 +1,5 @@
-import { ESLintUtils } from "@typescript-eslint/utils";
+import { type TSESTree, ESLintUtils } from "@typescript-eslint/utils";
+import type { RuleContext } from "@typescript-eslint/utils/ts-eslint";
 
 const createRule = ESLintUtils.RuleCreator((name) => name);
 
@@ -14,11 +15,104 @@ export type Options = [
      * @default "styles"
      */
     name?: string;
-  }
+  },
 ];
 
+type Context = Readonly<RuleContext<"requireVariantsCallStylesName", Options>>;
+
+const isCallExpression = (
+  init: TSESTree.Expression | null,
+): init is TSESTree.CallExpression => init?.type === "CallExpression";
+
+const isIdentifier = (
+  node: TSESTree.Node | null,
+): node is TSESTree.Identifier => node?.type === "Identifier";
+
+const reportIncorrectName = (options: {
+  context: Context;
+  id: TSESTree.Identifier;
+  functionName: string;
+  requiredName: string;
+}): void => {
+  options.context.report({
+    data: {
+      functionName: options.functionName,
+      name: options.requiredName,
+    },
+    fix: (fixer) => fixer.replaceText(options.id, options.requiredName),
+    messageId: MESSAGE_IDS.requireVariantsCallStylesName,
+    node: options.id,
+  });
+};
+
+const handleVariantFunctionCall = (options: {
+  context: Context;
+  init: TSESTree.CallExpression;
+  id: TSESTree.Identifier;
+  requiredName: string;
+}): void => {
+  if (!isIdentifier(options.init.callee)) {
+    return;
+  }
+
+  const variableName = options.id.name;
+  const functionName = options.init.callee.name;
+
+  if (variableName !== options.requiredName) {
+    reportIncorrectName({
+      context: options.context,
+      functionName,
+      id: options.id,
+      requiredName: options.requiredName,
+    });
+  }
+};
+
 export const rule = createRule<Options, MessageIds>({
-  name: "require-variants-call-styles-name",
+  create: (context) => {
+    const [options = {}] = context.options;
+    const requiredName = options.name ?? "styles";
+    const variantFunctions = new Set<string>();
+
+    const trackVariantFunction = (
+      init: TSESTree.CallExpression,
+      id: TSESTree.Identifier,
+    ): boolean => {
+      if (isIdentifier(init.callee) && init.callee.name === "tv") {
+        variantFunctions.add(id.name);
+        return true;
+      }
+      return false;
+    };
+
+    return {
+      VariableDeclarator(node): void {
+        const { init, id } = node;
+
+        if (
+          !init ||
+          !isCallExpression(init) ||
+          !isIdentifier(init.callee) ||
+          !isIdentifier(id)
+        ) {
+          return;
+        }
+
+        if (trackVariantFunction(init, id)) {
+          return;
+        }
+
+        if (variantFunctions.has(init.callee.name)) {
+          handleVariantFunctionCall({ context, id, init, requiredName });
+        }
+      },
+    };
+  },
+  defaultOptions: [
+    {
+      name: "styles",
+    },
+  ],
   meta: {
     docs: {
       description:
@@ -44,50 +138,5 @@ export const rule = createRule<Options, MessageIds>({
     ],
     type: "suggestion",
   },
-  defaultOptions: [
-    {
-      name: "styles",
-    },
-  ],
-  create: (context) => {
-    const options = context.options[0] || {};
-    const requiredName = options.name || "styles";
-
-    const variantFunctions = new Set<string>();
-
-    return {
-      VariableDeclarator(node) {
-        const init = node.init;
-        const id = node.id;
-
-        if (!init) return;
-        if (init.type !== "CallExpression") return;
-        if (init.callee.type !== "Identifier") return;
-        if (id.type !== "Identifier") return;
-
-        // Track variant functions created by tv()
-        if (init.callee.name === "tv") {
-          variantFunctions.add(id.name);
-          return;
-        }
-
-        if (variantFunctions.has(init.callee.name)) {
-          const variableName = id.name;
-          const functionName = init.callee.name;
-
-          if (variableName === requiredName) return;
-
-          context.report({
-            data: {
-              functionName,
-              name: requiredName,
-            },
-            fix: (fixer) => fixer.replaceText(id, requiredName),
-            messageId: MESSAGE_IDS.requireVariantsCallStylesName,
-            node: id,
-          });
-        }
-      },
-    };
-  },
+  name: "require-variants-call-styles-name",
 });

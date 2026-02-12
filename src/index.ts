@@ -1,15 +1,16 @@
 import css from "@eslint/css";
-import { ESLint, Linter } from "eslint";
+import type { ESLint, Linter } from "eslint";
 
 import {
   name as packageName,
   version as packageVersion,
 } from "../package.json";
+
 import { rules } from "./rules/index.js";
 
-type PluginConfigs = {
+interface PluginConfigs {
   recommended: Linter.Config[];
-};
+}
 
 const pluginName = "tailwind-variants";
 
@@ -52,6 +53,7 @@ export const configs: PluginConfigs = {
 export { plugin };
 
 export default {
-  ...plugin,
   configs,
+  meta: plugin.meta,
+  rules: plugin.rules,
 } as ESLint.Plugin & { configs: PluginConfigs };

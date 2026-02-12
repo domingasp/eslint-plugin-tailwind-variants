@@ -1,14 +1,15 @@
+// oxlint-disable oxc/no-rest-spread-properties
 import {
-  InvalidTestCase,
+  type InvalidTestCase,
+  type ValidTestCase,
   RuleTester,
-  ValidTestCase,
 } from "@typescript-eslint/rule-tester";
 import vueParser from "vue-eslint-parser";
 
 import {
+  type MessageIds,
+  type Options,
   MESSAGE_IDS,
-  MessageIds,
-  Options,
   rule,
 } from "./limited-inline-classes.js";
 
@@ -217,7 +218,7 @@ const invalid: InvalidTestCase<MessageIds, Options>[] = [
     name: "JSX: className with ternary with 6 classes on left side",
   },
 
-  // cn() usage violations
+  // Cn() usage violations
   {
     code: `<template><div :class="cn('${classes.SINGLE}')"></div></template>`,
     errors: [{ messageId: MESSAGE_IDS.noCnInClassName }],
