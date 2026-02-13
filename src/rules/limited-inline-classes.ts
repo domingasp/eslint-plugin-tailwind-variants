@@ -64,7 +64,7 @@ export const rule = createRule<Options, MessageIds>({
       description: `Allow a configurable number of inline class names; require use of tailwind-variants.`,
     },
     messages: {
-      limitedInlineClasses: `Inline className may contain at most {{max}} class. Use tailwind-variants instead.`,
+      limitedInlineClasses: `Inline className may contain at most {{max}} classes. Use tailwind-variants instead.`,
       noCnInClassName:
         "Using cn() in className is not allowed in component definition. Use tailwind-variants instead.",
     },
