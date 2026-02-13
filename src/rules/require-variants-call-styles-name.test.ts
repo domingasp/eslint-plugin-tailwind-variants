@@ -106,7 +106,6 @@ const invalid: InvalidTestCase<MessageIds, Options>[] = [
       },
     ],
     name: "Renames declaration and all references via suggestion",
-    output: null,
   },
 ];
 // #endregion Invalid Test Cases

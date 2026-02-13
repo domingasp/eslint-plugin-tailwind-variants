@@ -31,7 +31,8 @@
         "streetsidesoftware.code-spell-checker",
         "vivaxy.vscode-conventional-commits",
         "webpro.vscode-knip",
-        "oxc.oxc-vscode"
+        "oxc.oxc-vscode",
+        "pflannery.vscode-versionlens"
       ]
     }
   }
