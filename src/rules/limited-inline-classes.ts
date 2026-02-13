@@ -317,16 +317,19 @@ const detectExpressionViolation = (
   // oxlint-disable-next-line typescript/switch-exhaustiveness-check
   switch (exprType) {
     case AST_NODE_TYPES.ArrayExpression: {
-      return detectArrayViolation(expr, options);
+      return detectArrayViolation(expr as TSESTree.ArrayExpression, options);
     }
     case AST_NODE_TYPES.BinaryExpression: {
-      return detectBinaryViolation(expr, options);
+      return detectBinaryViolation(expr as TSESTree.BinaryExpression, options);
     }
     case AST_NODE_TYPES.CallExpression: {
-      return detectCallViolation(expr, options);
+      return detectCallViolation(expr as TSESTree.CallExpression, options);
     }
     case AST_NODE_TYPES.ConditionalExpression: {
-      return detectConditionalViolation(expr, options);
+      return detectConditionalViolation(
+        expr as TSESTree.ConditionalExpression,
+        options,
+      );
     }
     case AST_NODE_TYPES.Identifier: {
       return false;
@@ -335,13 +338,16 @@ const detectExpressionViolation = (
       return detectLiteralViolation(expr as TSESTree.Literal, options);
     }
     case AST_NODE_TYPES.LogicalExpression: {
-      return detectBinaryViolation(expr, options);
+      return detectBinaryViolation(expr as TSESTree.LogicalExpression, options);
     }
     case AST_NODE_TYPES.ObjectExpression: {
-      return detectObjectViolation(expr, options);
+      return detectObjectViolation(expr as TSESTree.ObjectExpression, options);
     }
     case AST_NODE_TYPES.TemplateLiteral: {
-      return detectTemplateLiteralViolation(expr, options);
+      return detectTemplateLiteralViolation(
+        expr as TSESTree.TemplateLiteral,
+        options,
+      );
     }
     case AST_NODE_TYPES.ThisExpression: {
       return false;
