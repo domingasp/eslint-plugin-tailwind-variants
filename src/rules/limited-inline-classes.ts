@@ -156,7 +156,7 @@ const validateTemplateLiteral = (
   // oxlint-disable-next-line no-magic-numbers
   if (expr.expressions.length === 0) {
     const [firstQuasi] = expr.quasis;
-    const raw = firstQuasi?.value.cooked;
+    const raw = firstQuasi.value.cooked;
     if (raw === null) {
       // Skip validation for malformed template literals
       return false;
