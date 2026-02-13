@@ -32,7 +32,8 @@
         "vivaxy.vscode-conventional-commits",
         "webpro.vscode-knip",
         "oxc.oxc-vscode",
-        "pflannery.vscode-versionlens"
+        "pflannery.vscode-versionlens",
+        "awwsky.regionmarker"
       ]
     }
   }
