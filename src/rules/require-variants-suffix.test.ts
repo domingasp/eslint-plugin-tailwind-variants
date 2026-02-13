@@ -1,13 +1,13 @@
 import {
-  InvalidTestCase,
+  type InvalidTestCase,
+  type ValidTestCase,
   RuleTester,
-  ValidTestCase,
 } from "@typescript-eslint/rule-tester";
 
 import {
+  type MessageIds,
+  type Options,
   MESSAGE_IDS,
-  MessageIds,
-  Options,
   rule,
 } from "./require-variants-suffix";
 
