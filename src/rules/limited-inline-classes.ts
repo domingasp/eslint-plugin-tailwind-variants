@@ -1,10 +1,13 @@
 import {
+  type TSESTree,
   AST_NODE_TYPES,
   ESLintUtils,
-  TSESTree,
 } from "@typescript-eslint/utils";
-import { RuleContext, RuleListener } from "@typescript-eslint/utils/ts-eslint";
-import { AST as VueAST } from "vue-eslint-parser";
+import type {
+  RuleContext,
+  RuleListener,
+} from "@typescript-eslint/utils/ts-eslint";
+import type { AST as VueAST } from "vue-eslint-parser";
 
 import { createRuleVisitors } from "../utils/create-rule-visitors";
 import { getBindClassExpression } from "../utils/get-bind-class-expression";
@@ -29,137 +32,343 @@ export type Options = [
      * @default 5
      */
     maxInlineClasses?: number;
-  }
+  },
 ];
 
-function countClasses(value: string) {
-  return value.trim().split(/\s+/).filter(Boolean).length;
+const DEFAULT_MAX_INLINE_CLASSES = 5;
+
+const countClasses = (value: string): number =>
+  value.trim().split(/\s+/).filter(Boolean).length;
+
+/** Shared validation options for all expression validators */
+interface ValidationOptions {
+  node: TSESTree.Node | VueAST.VAttribute;
+  context: RuleContext<MessageIds, Options>;
+  maxInlineClasses: number;
 }
 
-/** Recursively validate classes in any expression and detect cn() calls */
-function validateExpression(
-  node: TSESTree.Node | VueAST.VAttribute,
+/** Validate array expression elements */
+const validateArrayExpression = (
+  expr: TSESTree.ArrayExpression,
+  options: ValidationOptions,
+): boolean =>
+  expr.elements
+    .filter(
+      (el): el is TSESTree.Expression =>
+        el !== null && el.type !== AST_NODE_TYPES.SpreadElement,
+    )
+    .some((el) => validateExpression(el, options));
+
+/** Validate binary expression (left and right operands) */
+const validateBinaryExpression = (
   expr:
-    | null
+    | TSESTree.BinaryExpression
+    | TSESTree.LogicalExpression
+    | TSESTree.PrivateInExpression
+    | TSESTree.SymmetricBinaryExpression
+    | VueAST.ESLintBinaryExpression,
+  options: ValidationOptions,
+): boolean =>
+  validateExpression(expr.left, options) ||
+  validateExpression(expr.right, options);
+
+/** Validate call expression and detect cn() calls */
+const validateCallExpression = (
+  expr: TSESTree.CallExpression,
+  options: ValidationOptions,
+): boolean => {
+  if (
+    expr.callee.type === AST_NODE_TYPES.Identifier &&
+    expr.callee.name === "cn"
+  ) {
+    options.context.report({
+      messageId: MESSAGE_IDS.noCnInClassName,
+      node: options.node as TSESTree.Node,
+    });
+    return true;
+  }
+
+  return expr.arguments
+    .filter(
+      (arg): arg is TSESTree.Expression =>
+        arg.type !== AST_NODE_TYPES.SpreadElement,
+    )
+    .some((arg) => validateExpression(arg, options));
+};
+
+/** Validate conditional expression (ternary) */
+const validateConditionalExpression = (
+  expr: TSESTree.ConditionalExpression,
+  options: ValidationOptions,
+): boolean =>
+  validateExpression(expr.consequent, options) ||
+  validateExpression(expr.alternate, options);
+
+/** Validate string literal for class count */
+const validateLiteral = (
+  expr: TSESTree.Literal,
+  options: ValidationOptions,
+): boolean => {
+  if (
+    typeof expr.value === "string" &&
+    countClasses(expr.value) > options.maxInlineClasses
+  ) {
+    options.context.report({
+      data: { max: options.maxInlineClasses.toString() },
+      messageId: MESSAGE_IDS.limitedInlineClasses,
+      node: options.node as TSESTree.Node,
+    });
+    return true;
+  }
+
+  return false;
+};
+
+/** Validate object expression properties */
+const validateObjectExpression = (
+  expr: TSESTree.ObjectExpression,
+  options: ValidationOptions,
+): boolean =>
+  expr.properties.some((prop) => {
+    if (prop.type === AST_NODE_TYPES.Property) {
+      if (
+        prop.value === null ||
+        prop.value.type === AST_NODE_TYPES.ObjectPattern ||
+        prop.value.type === AST_NODE_TYPES.ArrayPattern
+      ) {
+        return false;
+      }
+
+      return validateExpression(
+        prop.value as TSESTree.Expression | VueAST.ESLintExpression,
+        options,
+      );
+    }
+    return false;
+  });
+
+/** Validate template literal for class count */
+const validateTemplateLiteral = (
+  expr: TSESTree.TemplateLiteral,
+  options: ValidationOptions,
+): boolean => {
+  // Static template literal
+  // oxlint-disable-next-line no-magic-numbers
+  if (expr.expressions.length === 0) {
+    const [firstQuasi] = expr.quasis;
+    const raw = firstQuasi.value.cooked;
+    if (raw === null) {
+      // Skip validation for malformed template literals
+      return false;
+    }
+
+    if (countClasses(raw) > options.maxInlineClasses) {
+      options.context.report({
+        data: { max: options.maxInlineClasses.toString() },
+        messageId: MESSAGE_IDS.limitedInlineClasses,
+        node: options.node as TSESTree.Node,
+      });
+      return true;
+    }
+  }
+  // Recurse into expressions
+  return expr.expressions.some((el) => validateExpression(el, options));
+};
+
+/** Recursively validate classes in any expression and detect cn() calls */
+// oxlint-disable-next-line max-statements max-lines-per-function
+const validateExpression = (
+  expr:
+    | undefined
     | TSESTree.Node
     | TSESTree.PrivateIdentifier
     | VueAST.ESLintExpression
     | VueAST.ESLintPrivateIdentifier
     | VueAST.VAttribute,
-  context: RuleContext<MessageIds, Options>,
-  maxInlineClasses = 5
-): boolean {
-  if (!expr) return false;
-
-  switch (expr.type) {
-    case AST_NODE_TYPES.ArrayExpression:
-      return expr.elements
-        .filter((el): el is TSESTree.Expression => {
-          return el !== null && el.type !== AST_NODE_TYPES.SpreadElement;
-        })
-        .some((el) => validateExpression(node, el, context, maxInlineClasses));
-
-    case AST_NODE_TYPES.BinaryExpression:
-      return (
-        validateExpression(node, expr.left, context, maxInlineClasses) ||
-        validateExpression(node, expr.right, context, maxInlineClasses)
-      );
-
-    case AST_NODE_TYPES.CallExpression:
-      if (
-        expr.callee.type === AST_NODE_TYPES.Identifier &&
-        expr.callee.name === "cn"
-      ) {
-        context.report({
-          messageId: MESSAGE_IDS.noCnInClassName,
-          node: node as TSESTree.Node,
-        });
-        return true;
-      }
-
-      return expr.arguments
-        .filter((arg): arg is TSESTree.Expression => {
-          return arg.type !== AST_NODE_TYPES.SpreadElement;
-        })
-        .some((arg) =>
-          validateExpression(node, arg, context, maxInlineClasses)
-        );
-
-    case AST_NODE_TYPES.ConditionalExpression:
-      return (
-        validateExpression(node, expr.consequent, context, maxInlineClasses) ||
-        validateExpression(node, expr.alternate, context, maxInlineClasses)
-      );
-
-    case AST_NODE_TYPES.Identifier:
-      return false;
-
-    case AST_NODE_TYPES.Literal:
-      if (typeof expr.value === "string") {
-        if (countClasses(expr.value) > maxInlineClasses) {
-          context.report({
-            data: { max: maxInlineClasses.toString() },
-            messageId: MESSAGE_IDS.limitedInlineClasses,
-            node: node as TSESTree.Node,
-          });
-          return true;
-        }
-      }
-      return false;
-
-    case AST_NODE_TYPES.LogicalExpression:
-      return (
-        validateExpression(node, expr.left, context, maxInlineClasses) ||
-        validateExpression(node, expr.right, context, maxInlineClasses)
-      );
-
-    case AST_NODE_TYPES.ObjectExpression:
-      return expr.properties.some((prop) => {
-        if (prop.type === AST_NODE_TYPES.Property) {
-          return validateExpression(
-            node,
-            prop.value &&
-              prop.value.type !== "ObjectPattern" &&
-              prop.value.type !== "ArrayPattern"
-              ? (prop.value as TSESTree.Expression | VueAST.ESLintExpression)
-              : null,
-            context,
-            maxInlineClasses
-          );
-        }
-        // Ignore SpreadElement and other non-Property types
-        return false;
-      });
-
-    case AST_NODE_TYPES.TemplateLiteral:
-      // Static template literal
-      if (expr.expressions.length === 0) {
-        const raw = expr.quasis[0]?.value.cooked ?? "";
-        if (countClasses(raw) > maxInlineClasses) {
-          context.report({
-            data: { max: maxInlineClasses.toString() },
-            messageId: MESSAGE_IDS.limitedInlineClasses,
-            node: node as TSESTree.Node,
-          });
-          return true;
-        }
-      }
-      // Recurse into expressions
-      return expr.expressions.some((el) =>
-        validateExpression(node, el, context, maxInlineClasses)
-      );
-
-    case AST_NODE_TYPES.ThisExpression:
-      return false;
-
-    default:
-      console.log("Unhandled expression type:", expr.type);
-      return false;
+  options: ValidationOptions,
+): boolean => {
+  if (!expr || !("type" in expr)) {
+    return false;
   }
-}
+
+  const exprType = expr.type;
+
+  // oxlint-disable-next-line typescript/switch-exhaustiveness-check
+  switch (exprType) {
+    case AST_NODE_TYPES.ArrayExpression: {
+      return validateArrayExpression(expr, options);
+    }
+    case AST_NODE_TYPES.BinaryExpression: {
+      return validateBinaryExpression(expr, options);
+    }
+    case AST_NODE_TYPES.CallExpression: {
+      return validateCallExpression(expr, options);
+    }
+    case AST_NODE_TYPES.ConditionalExpression: {
+      return validateConditionalExpression(expr, options);
+    }
+    case AST_NODE_TYPES.Identifier: {
+      return false;
+    }
+    case AST_NODE_TYPES.Literal: {
+      return validateLiteral(expr as TSESTree.Literal, options);
+    }
+    case AST_NODE_TYPES.LogicalExpression: {
+      return validateBinaryExpression(expr, options);
+    }
+    case AST_NODE_TYPES.ObjectExpression: {
+      return validateObjectExpression(expr, options);
+    }
+    case AST_NODE_TYPES.TemplateLiteral: {
+      return validateTemplateLiteral(expr, options);
+    }
+    case AST_NODE_TYPES.ThisExpression: {
+      return false;
+    }
+    default: {
+      return false;
+    }
+  }
+};
+
+/** Handle JSX className attribute validation */
+const handleJSXClassName = (
+  jsxAttr: TSESTree.JSXAttribute,
+  context: RuleContext<MessageIds, Options>,
+  maxInlineClasses: number,
+): void => {
+  const { value } = jsxAttr;
+  if (!value) {
+    return;
+  }
+
+  // ClassName="..."
+  if (
+    value.type === AST_NODE_TYPES.Literal &&
+    typeof value.value === "string" &&
+    countClasses(value.value) > maxInlineClasses
+  ) {
+    context.report({
+      data: { max: maxInlineClasses.toString() },
+      messageId: MESSAGE_IDS.limitedInlineClasses,
+      node: jsxAttr,
+    });
+    return;
+  }
+
+  // ClassName={`...`} / className={"..."}
+  if (value.type === AST_NODE_TYPES.JSXExpressionContainer) {
+    const expr = value.expression;
+    if (expr.type !== AST_NODE_TYPES.JSXEmptyExpression) {
+      validateExpression(expr, {
+        context,
+        maxInlineClasses,
+        node: jsxAttr,
+      });
+    }
+  }
+};
+
+/** Handle Vue static class attribute validation */
+const handleVueStaticClass = (
+  vAttr: VueAST.VAttribute,
+  context: RuleContext<MessageIds, Options>,
+  maxInlineClasses: number,
+): void => {
+  if (!vAttr.value) {
+    return;
+  }
+
+  // Class="..."
+  if (
+    !vAttr.directive &&
+    vAttr.key.type === "VIdentifier" &&
+    vAttr.key.name === "class" &&
+    countClasses(vAttr.value.value) > maxInlineClasses
+  ) {
+    context.report({
+      data: { max: maxInlineClasses.toString() },
+      messageId: MESSAGE_IDS.limitedInlineClasses,
+      // Cast to TSESTree.Node since VAttribute is not directly compatible
+      node: vAttr as unknown as TSESTree.Node,
+    });
+  }
+};
+
+/** Handle Vue dynamic class binding validation */
+const handleVueDynamicClass = (
+  vAttr: VueAST.VAttribute,
+  context: RuleContext<MessageIds, Options>,
+  maxInlineClasses: number,
+): void => {
+  const container = getBindClassExpression(vAttr);
+  if (!container) {
+    return;
+  }
+  // :class="..." / v-bind:class
+  if (container.expression) {
+    validateExpression(container.expression as VueAST.ESLintExpression, {
+      context,
+      maxInlineClasses,
+      node: vAttr,
+    });
+  }
+};
+
+/** Create script visitor for JSX className attributes */
+const createScriptVisitor = (
+  context: RuleContext<MessageIds, Options>,
+  maxInlineClasses: number,
+): RuleListener => ({
+  JSXAttribute(node: unknown): void {
+    const jsxAttr = node as TSESTree.JSXAttribute;
+    if (jsxAttr.name.name !== "className") {
+      return;
+    }
+    handleJSXClassName(jsxAttr, context, maxInlineClasses);
+  },
+});
+
+/** Create template visitor for Vue class attributes */
+const createTemplateVisitor = (
+  context: RuleContext<MessageIds, Options>,
+  maxInlineClasses: number,
+): RuleListener => ({
+  VAttribute(node: unknown): void {
+    const vAttr = node as VueAST.VAttribute;
+    handleVueStaticClass(vAttr, context, maxInlineClasses);
+    handleVueDynamicClass(vAttr, context, maxInlineClasses);
+  },
+});
+
+/** Check if file should be processed based on directory pattern */
+const shouldProcessFile = (
+  fileName: string,
+  directoryPattern: string,
+): boolean => fileName.replaceAll("\\", "/").includes(directoryPattern);
 
 export const rule = createRule<Options, MessageIds>({
-  name: "limited-inline-classes",
+  create: (context) => {
+    const [options = {}] = context.options;
+    const directoryPattern = options.directoryPattern ?? "/components/";
+    const maxInlineClasses =
+      options.maxInlineClasses ?? DEFAULT_MAX_INLINE_CLASSES;
+
+    if (!shouldProcessFile(context.filename, directoryPattern)) {
+      return {};
+    }
+
+    const scriptVisitor = createScriptVisitor(context, maxInlineClasses);
+    const templateVisitor = createTemplateVisitor(context, maxInlineClasses);
+
+    return createRuleVisitors(context, templateVisitor, scriptVisitor);
+  },
+  defaultOptions: [
+    {
+      directoryPattern: "/components/",
+      maxInlineClasses: 5,
+    },
+  ],
   meta: {
     docs: {
       description: `Allow a configurable number of inline class names; require use of tailwind-variants.`,
@@ -191,93 +400,5 @@ export const rule = createRule<Options, MessageIds>({
     ],
     type: "problem",
   },
-  defaultOptions: [
-    {
-      directoryPattern: "/components/",
-      maxInlineClasses: 5,
-    },
-  ],
-  create: (context) => {
-    const options = context.options[0] || {};
-    const directoryPattern = options.directoryPattern || "/components/";
-    const maxInlineClasses = options.maxInlineClasses ?? 5;
-
-    const fileName = context.filename;
-
-    if (!fileName.replace(/\\/g, "/").includes(directoryPattern)) {
-      return {};
-    }
-
-    // Script visitors (for JSX in Vue <script> or React files)
-    const scriptVisitor: RuleListener = {
-      JSXAttribute(node: unknown) {
-        const jsxAttr = node as TSESTree.JSXAttribute;
-        if (jsxAttr.name.name !== "className") return;
-
-        const value = jsxAttr.value;
-        if (!value) return;
-
-        // className="..."
-        if (
-          value.type === AST_NODE_TYPES.Literal &&
-          typeof value.value === "string"
-        ) {
-          if (countClasses(value.value) > maxInlineClasses) {
-            context.report({
-              data: { max: maxInlineClasses.toString() },
-              messageId: MESSAGE_IDS.limitedInlineClasses,
-              node: jsxAttr,
-            });
-            return;
-          }
-        }
-
-        // className={`...`} / className={"..."}
-        if (value.type === AST_NODE_TYPES.JSXExpressionContainer) {
-          const expr = value.expression;
-          if (expr.type !== AST_NODE_TYPES.JSXEmptyExpression) {
-            validateExpression(jsxAttr, expr, context, maxInlineClasses);
-          }
-        }
-      },
-    };
-
-    // Template visitors (for Vue <template>)
-    const templateVisitor: RuleListener = {
-      VAttribute(node: unknown) {
-        const vAttr = node as VueAST.VAttribute;
-        if (!vAttr.value) return;
-
-        // class="..."
-        if (
-          !vAttr.directive &&
-          vAttr.key.type === "VIdentifier" &&
-          vAttr.key.name === "class"
-        ) {
-          if (countClasses(vAttr.value.value) > maxInlineClasses) {
-            context.report({
-              data: { max: maxInlineClasses.toString() },
-              messageId: MESSAGE_IDS.limitedInlineClasses,
-              node: vAttr as never,
-            });
-          }
-        }
-
-        const container = getBindClassExpression(vAttr);
-        if (!container) return;
-
-        // :class="..." / v-bind:class
-        if (container.expression) {
-          validateExpression(
-            vAttr,
-            container.expression as VueAST.ESLintExpression,
-            context,
-            maxInlineClasses
-          );
-        }
-      },
-    };
-
-    return createRuleVisitors(context, templateVisitor, scriptVisitor);
-  },
+  name: "limited-inline-classes",
 });

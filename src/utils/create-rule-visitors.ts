@@ -1,6 +1,8 @@
 import type { ParserServices } from "@typescript-eslint/utils";
-
-import { RuleContext, RuleListener } from "@typescript-eslint/utils/ts-eslint";
+import type {
+  RuleContext,
+  RuleListener,
+} from "@typescript-eslint/utils/ts-eslint";
 
 /**
  * Extended parser services to add methods provided by vue-eslint-parser
@@ -8,11 +10,11 @@ import { RuleContext, RuleListener } from "@typescript-eslint/utils/ts-eslint";
 interface VueParserServices {
   defineDocumentVisitor?: (
     documentVisitor: RuleListener,
-    options?: Record<string, unknown>
+    options?: Record<string, unknown>,
   ) => RuleListener;
   defineTemplateBodyVisitor: (
     templateVisitor: RuleListener,
-    scriptVisitor?: RuleListener
+    scriptVisitor?: RuleListener,
   ) => RuleListener;
 }
 
@@ -20,33 +22,32 @@ interface VueParserServices {
  * Creates rule visitors that work for both Vue single-file components and
  * regular script files (e.g., React).
  */
-export function createRuleVisitors<
+export const createRuleVisitors = <
   TMessageIds extends string,
-  TOptions extends readonly unknown[]
+  TOptions extends readonly unknown[],
 >(
   context: RuleContext<TMessageIds, TOptions>,
   templateVisitor: RuleListener,
-  scriptVisitor: RuleListener
-) {
+  scriptVisitor: RuleListener,
+): RuleListener => {
   const fileName = context.filename;
 
   if (fileName.endsWith(".vue")) {
-    const sourceCode = context.sourceCode;
-    const parserServices = sourceCode.parserServices;
+    const { sourceCode } = context;
+    const { parserServices } = sourceCode;
 
     if (isVueParserServices(parserServices)) {
       return parserServices.defineTemplateBodyVisitor(
         templateVisitor,
-        scriptVisitor
+        scriptVisitor,
       );
     }
   }
 
   return scriptVisitor;
-}
+};
 
-function isVueParserServices(
-  services: Partial<ParserServices> | undefined
-): services is ParserServices & VueParserServices {
-  return services !== undefined && "defineTemplateBodyVisitor" in services;
-}
+const isVueParserServices = (
+  services: Partial<ParserServices> | undefined,
+): services is ParserServices & VueParserServices =>
+  typeof services !== "undefined" && "defineTemplateBodyVisitor" in services;
