@@ -6,51 +6,17 @@ const createRule = ESLintUtils.RuleCreator((name) => name);
 export const MESSAGE_IDS = {
   requireVariantsSuffix: "requireVariantsSuffix",
 } as const;
-
 export type MessageIds = (typeof MESSAGE_IDS)[keyof typeof MESSAGE_IDS];
+
 export type Options = [
   {
     /**
-     * Suffix required for variables assigned from tv()
+     * Suffix required for variables assigned from tv().
      * @default "Variants"
      */
     suffix?: string;
   },
 ];
-
-/** Check if node is a valid tv() call expression */
-const isTvCallExpression = (init: TSESTree.Expression): boolean =>
-  init.type === "CallExpression" &&
-  init.callee.type === "Identifier" &&
-  init.callee.name === "tv";
-
-/** Check if identifier already has the correct suffix */
-const hasSuffix = (id: TSESTree.BindingName, suffix: string): boolean =>
-  id.type === "Identifier" && id.name.endsWith(suffix);
-
-/** Validate and report tv() variable naming */
-const validateTvVariableName = (
-  node: TSESTree.VariableDeclarator,
-  context: RuleContext<MessageIds, Options>,
-  suffix: string,
-): void => {
-  const { init, id } = node;
-
-  if (!init || !isTvCallExpression(init)) {
-    return;
-  }
-
-  if (id.type !== "Identifier" || hasSuffix(id, suffix)) {
-    return;
-  }
-
-  context.report({
-    data: { suffix },
-    fix: (fixer) => fixer.insertTextAfter(id, suffix),
-    messageId: MESSAGE_IDS.requireVariantsSuffix,
-    node: id,
-  });
-};
 
 export const rule = createRule<Options, MessageIds>({
   create: (context) => {
@@ -59,7 +25,7 @@ export const rule = createRule<Options, MessageIds>({
 
     return {
       VariableDeclarator(node): void {
-        validateTvVariableName(node, context, suffix);
+        detectTvVariableNameViolation(node, context, suffix);
       },
     };
   },
@@ -95,3 +61,41 @@ export const rule = createRule<Options, MessageIds>({
   },
   name: "require-variants-suffix",
 });
+
+const isTvCallExpression = (init: TSESTree.Expression): boolean =>
+  init.type === "CallExpression" &&
+  init.callee.type === "Identifier" &&
+  init.callee.name === "tv";
+
+const hasSuffix = (id: TSESTree.BindingName, suffix: string): boolean =>
+  id.type === "Identifier" && id.name.endsWith(suffix);
+
+/**
+ * Detect tv() variable naming violations and report with autofix.
+ *
+ * @param {TSESTree.VariableDeclarator} node - Variable declarator to check.
+ * @param {RuleContext<MessageIds, Options>} context - ESLint rule context.
+ * @param {string} suffix - Required variable name suffix.
+ */
+const detectTvVariableNameViolation = (
+  node: TSESTree.VariableDeclarator,
+  context: RuleContext<MessageIds, Options>,
+  suffix: string,
+): void => {
+  const { init, id } = node;
+
+  if (!init || !isTvCallExpression(init)) {
+    return;
+  }
+
+  if (id.type !== "Identifier" || hasSuffix(id, suffix)) {
+    return;
+  }
+
+  context.report({
+    data: { suffix },
+    fix: (fixer) => fixer.insertTextAfter(id, suffix),
+    messageId: MESSAGE_IDS.requireVariantsSuffix,
+    node: id,
+  });
+};

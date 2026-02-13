@@ -1,22 +1,12 @@
 import type { AST } from "vue-eslint-parser";
 
 /**
- * Check if the directive key is a bound class attribute.
- */
-const isBindClassDirective = (key: AST.VDirectiveKey): boolean =>
-  key.name.name === "bind" &&
-  key.argument?.type === "VIdentifier" &&
-  key.argument.name === "class";
-
-/**
- * Check if the attribute is a valid directive with a value.
- */
-const isValidDirective = (node: AST.VAttribute): boolean =>
-  Boolean(node.directive && node.value && "expression" in node.value);
-
-/**
  * Return the expression container for a bound class attribute,
- * Or undefined if not applicable.
+ * or undefined if not applicable.
+ *
+ * @param {AST.VAttribute} node - AST node to check.
+ *
+ * @returns {AST.VExpressionContainer | undefined} Expression container if valid.
  */
 export const getBindClassExpression = (
   node: AST.VAttribute,
@@ -32,3 +22,11 @@ export const getBindClassExpression = (
 
   return node.value as unknown as AST.VExpressionContainer;
 };
+
+const isBindClassDirective = (key: AST.VDirectiveKey): boolean =>
+  key.name.name === "bind" &&
+  key.argument?.type === "VIdentifier" &&
+  key.argument.name === "class";
+
+const isValidDirective = (node: AST.VAttribute): boolean =>
+  Boolean(node.directive && node.value && "expression" in node.value);
