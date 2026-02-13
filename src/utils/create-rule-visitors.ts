@@ -5,22 +5,14 @@ import type {
 } from "@typescript-eslint/utils/ts-eslint";
 
 /**
- * Extended parser services to add methods provided by vue-eslint-parser
- */
-interface VueParserServices {
-  defineDocumentVisitor?: (
-    documentVisitor: RuleListener,
-    options?: Record<string, unknown>,
-  ) => RuleListener;
-  defineTemplateBodyVisitor: (
-    templateVisitor: RuleListener,
-    scriptVisitor?: RuleListener,
-  ) => RuleListener;
-}
-
-/**
- * Creates rule visitors that work for both Vue single-file components and
- * regular script files (e.g., React).
+ * Create and return rule visitors that work for both Vue single-file components
+ * and regular script files.
+ *
+ * @param {RuleContext<TMessageIds, TOptions>} context - ESLint rule context.
+ * @param {RuleListener} templateVisitor - Visitor for Vue template sections.
+ * @param {RuleListener} scriptVisitor - Visitor for script sections.
+ *
+ * @returns {RuleListener} Appropriate visitor based on the file type.
  */
 export const createRuleVisitors = <
   TMessageIds extends string,
@@ -46,6 +38,20 @@ export const createRuleVisitors = <
 
   return scriptVisitor;
 };
+
+/**
+ * Extended parser services to add methods provided by vue-eslint-parser
+ */
+interface VueParserServices {
+  defineDocumentVisitor?: (
+    documentVisitor: RuleListener,
+    options?: Record<string, unknown>,
+  ) => RuleListener;
+  defineTemplateBodyVisitor: (
+    templateVisitor: RuleListener,
+    scriptVisitor?: RuleListener,
+  ) => RuleListener;
+}
 
 const isVueParserServices = (
   services: Partial<ParserServices> | undefined,
