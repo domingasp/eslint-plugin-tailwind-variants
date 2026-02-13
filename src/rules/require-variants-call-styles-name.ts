@@ -11,111 +11,17 @@ export const MESSAGE_IDS = {
   renameAllOccurrences: "renameAllOccurrences",
   requireVariantsCallStylesName: "requireVariantsCallStylesName",
 } as const;
-
 export type MessageIds = (typeof MESSAGE_IDS)[keyof typeof MESSAGE_IDS];
+
 export type Options = [
   {
     /**
-     * Name required for variables assigned from tv()
+     * Name required for variables assigned from tv().
      * @default "styles"
      */
     name?: string;
   },
 ];
-
-type Context = Readonly<RuleContext<MessageIds, Options>>;
-
-const isCallExpression = (
-  init: TSESTree.Expression | null,
-): init is TSESTree.CallExpression => init?.type === "CallExpression";
-
-const isIdentifier = (
-  node: TSESTree.Node | null,
-): node is TSESTree.Identifier => node?.type === "Identifier";
-
-const collectReferences = (options: {
-  sourceCode: Readonly<SourceCode>;
-  declaratorNode: TSESTree.VariableDeclarator;
-  id: TSESTree.Identifier;
-}): TSESTree.Identifier[] => {
-  const declaredVariables = options.sourceCode.getDeclaredVariables(
-    options.declaratorNode,
-  );
-  const references: TSESTree.Identifier[] = [];
-
-  for (const variable of declaredVariables) {
-    if (variable.name === options.id.name) {
-      for (const reference of variable.references) {
-        if (
-          reference.identifier !== options.id &&
-          reference.identifier.type === "Identifier"
-        ) {
-          references.push(reference.identifier);
-        }
-      }
-      break;
-    }
-  }
-
-  return references;
-};
-
-const reportIncorrectName = (options: {
-  context: Context;
-  id: TSESTree.Identifier;
-  requiredName: string;
-  declaratorNode: TSESTree.VariableDeclarator;
-}): void => {
-  const { sourceCode } = options.context;
-  const references = collectReferences({
-    declaratorNode: options.declaratorNode,
-    id: options.id,
-    sourceCode,
-  });
-
-  options.context.report({
-    data: {
-      name: options.requiredName,
-    },
-    messageId: MESSAGE_IDS.requireVariantsCallStylesName,
-    node: options.id,
-    suggest: [
-      {
-        data: {
-          name: options.requiredName,
-        },
-        fix: (fixer): RuleFix[] => {
-          const fixes = [fixer.replaceText(options.id, options.requiredName)];
-
-          for (const reference of references) {
-            fixes.push(fixer.replaceText(reference, options.requiredName));
-          }
-
-          return fixes;
-        },
-        messageId: MESSAGE_IDS.renameAllOccurrences,
-      },
-    ],
-  });
-};
-
-const handleVariantFunctionCall = (options: {
-  context: Context;
-  id: TSESTree.Identifier;
-  requiredName: string;
-  declaratorNode: TSESTree.VariableDeclarator;
-}): void => {
-  const variableName = options.id.name;
-
-  if (variableName !== options.requiredName) {
-    reportIncorrectName({
-      context: options.context,
-      declaratorNode: options.declaratorNode,
-      id: options.id,
-      requiredName: options.requiredName,
-    });
-  }
-};
 
 export const rule = createRule<Options, MessageIds>({
   create: (context) => {
@@ -154,7 +60,7 @@ export const rule = createRule<Options, MessageIds>({
         }
 
         if (variantFunctions.has(init.callee.name)) {
-          handleVariantFunctionCall({
+          detectVariantVariableNameViolation({
             context,
             declaratorNode: node,
             id,
@@ -197,3 +103,116 @@ export const rule = createRule<Options, MessageIds>({
   },
   name: "require-variants-call-styles-name",
 });
+
+type Context = Readonly<RuleContext<MessageIds, Options>>;
+
+const isCallExpression = (
+  init: TSESTree.Expression | null,
+): init is TSESTree.CallExpression => init?.type === "CallExpression";
+
+const isIdentifier = (
+  node: TSESTree.Node | null,
+): node is TSESTree.Identifier => node?.type === "Identifier";
+
+/**
+ * Collect all references to a variable declaration, excluding the initial
+ * declaration.
+ *
+ * @param {object} options - Collection options.
+ *
+ * @returns {TSESTree.Identifier[]} Array of identifier nodes referencing the variable.
+ */
+const collectReferences = (options: {
+  sourceCode: Readonly<SourceCode>;
+  declaratorNode: TSESTree.VariableDeclarator;
+  id: TSESTree.Identifier;
+}): TSESTree.Identifier[] => {
+  const declaredVariables = options.sourceCode.getDeclaredVariables(
+    options.declaratorNode,
+  );
+  const references: TSESTree.Identifier[] = [];
+
+  for (const variable of declaredVariables) {
+    if (variable.name === options.id.name) {
+      for (const reference of variable.references) {
+        if (
+          reference.identifier !== options.id &&
+          reference.identifier.type === "Identifier"
+        ) {
+          references.push(reference.identifier);
+        }
+      }
+      break;
+    }
+  }
+
+  return references;
+};
+
+/**
+ * Report incorrect variable name with autofix suggestion to rename all
+ * occurrences.
+ *
+ * @param {object} options - Reporting options.
+ */
+const reportIncorrectName = (options: {
+  context: Context;
+  id: TSESTree.Identifier;
+  requiredName: string;
+  declaratorNode: TSESTree.VariableDeclarator;
+}): void => {
+  const { sourceCode } = options.context;
+  const references = collectReferences({
+    declaratorNode: options.declaratorNode,
+    id: options.id,
+    sourceCode,
+  });
+
+  options.context.report({
+    data: {
+      name: options.requiredName,
+    },
+    messageId: MESSAGE_IDS.requireVariantsCallStylesName,
+    node: options.id,
+    suggest: [
+      {
+        data: {
+          name: options.requiredName,
+        },
+        fix: (fixer): RuleFix[] => {
+          const fixes = [fixer.replaceText(options.id, options.requiredName)];
+
+          for (const reference of references) {
+            fixes.push(fixer.replaceText(reference, options.requiredName));
+          }
+
+          return fixes;
+        },
+        messageId: MESSAGE_IDS.renameAllOccurrences,
+      },
+    ],
+  });
+};
+
+/**
+ * Detect variant variable name violations and report if found.
+ *
+ * @param {object} options - Validation options.
+ */
+const detectVariantVariableNameViolation = (options: {
+  context: Context;
+  id: TSESTree.Identifier;
+  requiredName: string;
+  declaratorNode: TSESTree.VariableDeclarator;
+}): void => {
+  const variableName = options.id.name;
+
+  if (variableName !== options.requiredName) {
+    reportIncorrectName({
+      context: options.context,
+      declaratorNode: options.declaratorNode,
+      id: options.id,
+      requiredName: options.requiredName,
+    });
+  }
+};
