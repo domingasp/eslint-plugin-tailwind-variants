@@ -263,10 +263,7 @@ const createSingleFix = ({
     throw new Error("Node missing offset information");
   }
 
-  const sortedDeclaration = getFullDeclaration(
-    sortedNode as NodeWithOffset,
-    sourceCode,
-  );
+  const sortedDeclaration = getFullDeclaration(sortedNode, sourceCode);
 
   const currentLineStart = sourceCode.getIndexFromLoc({
     column: 1,
