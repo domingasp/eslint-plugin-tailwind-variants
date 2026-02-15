@@ -26,7 +26,6 @@ const vueParserConfig = {
   languageOptions: { parser: vueParser },
 };
 
-// #region Valid Test Cases
 const valid: ValidTestCase<Options>[] = [
   // Vue: static class with acceptable number of classes
   {
@@ -154,9 +153,7 @@ const valid: ValidTestCase<Options>[] = [
     options: [{ directoryPattern: "/components/" }],
   },
 ];
-// #endregion Valid Test Cases
 
-// #region Invalid Test Cases
 const invalid: InvalidTestCase<MessageIds, Options>[] = [
   // Vue: static class exceeding maxInlineClasses
   {
@@ -264,7 +261,6 @@ const invalid: InvalidTestCase<MessageIds, Options>[] = [
     ...vueParserConfig,
   },
 ];
-// #endregion Invalid Test Cases
 
 tester.run("limited-inline-classes", rule, {
   invalid,

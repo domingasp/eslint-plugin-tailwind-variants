@@ -4,7 +4,6 @@ import { MESSAGE_IDS, rule } from "./require-variants-suffix";
 
 const tester = new RuleTester();
 
-// #region Valid Test Cases
 const valid = [
   {
     code: `const buttonVariants = tv({})`,
@@ -16,9 +15,7 @@ const valid = [
     options: [{ suffix: "Styles" }],
   },
 ];
-// #endregion Valid Test Cases
 
-// #region Invalid Test Cases
 const invalid = [
   {
     code: `const button = tv({})`,
@@ -34,7 +31,6 @@ const invalid = [
     output: `const buttonStyles = tv({})`,
   },
 ];
-// #endregion Invalid Test Cases
 
 tester.run("require-variants-suffix", rule, {
   invalid,

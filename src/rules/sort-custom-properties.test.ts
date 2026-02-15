@@ -17,7 +17,6 @@ const tester = new RuleTester({
   plugins: { css },
 });
 
-// #region Valid Test Cases
 const valid: ValidTestCase<Options>[] = [
   {
     code: `
@@ -261,9 +260,7 @@ const valid: ValidTestCase<Options>[] = [
     name: "Empty block with braces",
   },
 ];
-// #endregion Valid Test Cases
 
-// #region Invalid Test Cases
 const invalid: InvalidTestCase<MessageIds, Options>[] = [
   {
     code: `
@@ -761,7 +758,6 @@ const invalid: InvalidTestCase<MessageIds, Options>[] = [
     ],
   },
 ];
-// #endregion Invalid Test Cases
 
 tester.run("sort-custom-properties", rule, {
   invalid,

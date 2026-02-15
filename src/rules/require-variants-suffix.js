@@ -55,8 +55,7 @@ export const rule = {
 
 /**
  * Check if expression is a tv() call.
- *
- * @param {import("estree").Expression} init Initializer node to check.
+ * @param {import("estree").Expression} init
  * @returns {boolean} `true` if expression is a tv() call.
  */
 const isTvCallExpression = (init) =>
@@ -66,9 +65,8 @@ const isTvCallExpression = (init) =>
 
 /**
  * Detect tv() variable naming violations and report with autofix.
- *
- * @param {import("estree").VariableDeclarator} node VariableDeclarator node to check.
- * @param {import("eslint").Rule.RuleContext} context Rule context.
+ * @param {import("estree").VariableDeclarator} node
+ * @param {import("eslint").Rule.RuleContext} context
  * @param {string} suffix Required variable name suffix.
  */
 const detectTvVariableNameViolation = (node, context, suffix) => {
