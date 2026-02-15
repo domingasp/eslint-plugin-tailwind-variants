@@ -21,6 +21,9 @@ importers:
       '@commitlint/config-conventional':
         specifier: ^20.4.1
         version: 20.4.1
+      '@types/estree':
+        specifier: ^1.0.8
+        version: 1.0.8
       '@types/node':
         specifier: ^25.2.3
         version: 25.2.3

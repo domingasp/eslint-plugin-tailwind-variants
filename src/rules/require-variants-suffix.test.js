@@ -1,20 +1,11 @@
-import {
-  type InvalidTestCase,
-  type ValidTestCase,
-  RuleTester,
-} from "@typescript-eslint/rule-tester";
+import { RuleTester } from "eslint";
 
-import {
-  type MessageIds,
-  type Options,
-  MESSAGE_IDS,
-  rule,
-} from "./require-variants-suffix";
+import { MESSAGE_IDS, rule } from "./require-variants-suffix";
 
 const tester = new RuleTester();
 
 // #region Valid Test Cases
-const valid: ValidTestCase<Options>[] = [
+const valid = [
   {
     code: `const buttonVariants = tv({})`,
     name: "Variable ends with 'Variants' suffix (default)",
@@ -28,7 +19,7 @@ const valid: ValidTestCase<Options>[] = [
 // #endregion Valid Test Cases
 
 // #region Invalid Test Cases
-const invalid: InvalidTestCase<MessageIds, Options>[] = [
+const invalid = [
   {
     code: `const button = tv({})`,
     errors: [{ messageId: MESSAGE_IDS.requireVariantsSuffix }],

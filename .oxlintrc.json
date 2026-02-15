@@ -13,6 +13,7 @@
     // Sort handled by oxfmt
     "sort-imports": "off",
     "unicorn/no-typeof-undefined": "off",
+    "no-inline-comments": ["error", { "ignorePattern": "type" }],
     "eslint/id-length": [
       "warn",
       {
