@@ -64,7 +64,7 @@ export const rule = {
             description:
               "Maximum number of inline classes allowed (default: 5).",
             minimum: 1,
-            type: "number",
+            type: "integer",
           },
         },
         type: "object",

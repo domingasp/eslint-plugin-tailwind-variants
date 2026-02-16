@@ -71,7 +71,7 @@ export const rule = {
     ],
     docs: {
       description:
-        "Require variables assigned from calling a function returned by tv() to be named {{name}}.",
+        "Require variables assigned from calling a function returned by tv() to be named a specific name.",
     },
     hasSuggestions: true,
     messages: {
