@@ -1,23 +1,16 @@
+// oxlint-disable max-lines
 import css from "@eslint/css";
-import {
-  type InvalidTestCase,
-  type ValidTestCase,
-  RuleTester,
-} from "@typescript-eslint/rule-tester";
+import { RuleTester } from "eslint";
 
-import {
-  type MessageIds,
-  type Options,
-  MESSAGE_IDS,
-  rule,
-} from "./sort-custom-properties";
+import { MESSAGE_IDS, rule } from "./sort-custom-properties";
 
 const tester = new RuleTester({
   language: "css/css",
   plugins: { css },
 });
 
-const valid: ValidTestCase<Options>[] = [
+/** @type {import("eslint").RuleTester.ValidTestCase[]} */
+const valid = [
   {
     code: `
 			:root {
@@ -261,7 +254,8 @@ const valid: ValidTestCase<Options>[] = [
   },
 ];
 
-const invalid: InvalidTestCase<MessageIds, Options>[] = [
+/** @type {import("eslint").RuleTester.InvalidTestCase[]} */
+const invalid = [
   {
     code: `
 			:root {
