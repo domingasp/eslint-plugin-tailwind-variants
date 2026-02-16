@@ -8,7 +8,7 @@
     "declarationMap": true,
     "outDir": "dist",
     "resolveJsonModule": true,
-    "module": "es2022",
+    "module": "esnext",
     "target": "es2024",
     "moduleResolution": "bundler"
   },

@@ -1,8 +1,8 @@
-import { createRuleVisitors } from "../utils/create-rule-visitors";
+import { createRuleVisitors } from "../utils/create-rule-visitors.js";
 import {
   getBindClassExpression,
   isValidDirective,
-} from "../utils/get-bind-class-expression";
+} from "../utils/get-bind-class-expression.js";
 
 export const MESSAGE_IDS = {
   limitedInlineClasses: "limitedInlineClasses",
