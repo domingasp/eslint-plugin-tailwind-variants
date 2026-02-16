@@ -1,3 +1,9 @@
+## [2.1.3](https://github.com/domingasp/eslint-plugin-tailwind-variants/compare/v2.1.2...v2.1.3) (2026-02-16)
+
+### Bug Fixes
+
+* incorrect rootdir breaking usage in typescript ([12a5a27](https://github.com/domingasp/eslint-plugin-tailwind-variants/commit/12a5a27eb92b1a2d714b8fd2ed1613758660ed71))
+
 ## [2.1.2](https://github.com/domingasp/eslint-plugin-tailwind-variants/compare/v2.1.1...v2.1.2) (2026-02-16)
 
 ### Bug Fixes
