@@ -29,7 +29,7 @@ export const rule = {
     ],
     docs: {
       description:
-        "Require variables assigned from tv() to end with {{suffix}}.",
+        "Require variables assigned from tv() to end with a given suffix.",
     },
     fixable: "code",
     messages: {
