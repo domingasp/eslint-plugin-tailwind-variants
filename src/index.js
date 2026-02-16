@@ -23,7 +23,7 @@ const plugin = {
  */
 
 /** @type {PluginConfigs} */
-export const configs = {
+const configs = {
   recommended: [
     {
       plugins: {
