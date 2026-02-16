@@ -13,7 +13,7 @@ export const MESSAGE_IDS = {
 /** @type {import("eslint").Rule.RuleModule} */
 export const rule = {
   create: (context) => {
-    const [options = {}] = /** @type {[RuleOptions]} */ context.options;
+    const [options = {}] = /** @type {[RuleOptions]} */ (context.options);
     const requiredName = options.name ?? "styles";
 
     // Tracks by name, not scope—shadowed identifiers may cause false positives

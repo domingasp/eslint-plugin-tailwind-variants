@@ -291,5 +291,5 @@ This rule was introduced in eslint-plugin-tailwind-variants v2.0.0
 
 ## :mag: Implementation
 
-- [Rule source](https://github.com/domingasp/eslint-plugin-tailwind-variants/blob/main/src/rules/sort-custom-propertiej.js)
+- [Rule source](https://github.com/domingasp/eslint-plugin-tailwind-variants/blob/main/src/rules/sort-custom-properties.js)
 - [Test source](https://github.com/domingasp/eslint-plugin-tailwind-variants/blob/main/src/rules/sort-custom-properties.test.js)

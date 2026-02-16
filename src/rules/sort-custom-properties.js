@@ -41,7 +41,7 @@ export const MESSAGE_IDS = {
 /** @type {import("eslint").Rule.RuleModule} */
 export const rule = {
   create: (context) => {
-    const [options = {}] = /** @type {[RuleOptions]} */ context.options;
+    const [options = {}] = /** @type {[RuleOptions]} */ (context.options);
     const order = options.order ?? DEFAULT_ORDER;
     const emptyLineBetweenGroups = options.emptyLineBetweenGroups ?? false;
     const { sourceCode } = context;
@@ -261,7 +261,7 @@ const hasMissingGroupSpacing = (properties) => {
       typeof curr.node.loc?.start.line !== "undefined" &&
       typeof prev.node.loc?.end.line !== "undefined"
     ) {
-      const linesBetween = curr.node.loc?.start.line - prev.node.loc?.end.line;
+      const linesBetween = curr.node.loc.start.line - prev.node.loc.end.line;
       if (linesBetween < SPACING_THRESHOLD) {
         // Needs empty lines
         return true;
@@ -430,7 +430,9 @@ const createFixer = (config) => (fixer) => {
   const { sorted, currentBlockProperties } = config;
 
   try {
-    sorted.every((item) => getNodeLoc(item.node));
+    for (const item of sorted) {
+      getNodeLoc(item.node);
+    }
   } catch {
     return null;
   }

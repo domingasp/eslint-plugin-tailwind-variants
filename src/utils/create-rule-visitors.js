@@ -14,7 +14,7 @@ export const createRuleVisitors = (context, templateVisitor, scriptVisitor) => {
     const { parserServices } = sourceCode;
 
     if (
-      parserServices !== "undefined" &&
+      typeof parserServices !== "undefined" &&
       "defineTemplateBodyVisitor" in parserServices
     ) {
       return parserServices.defineTemplateBodyVisitor(
