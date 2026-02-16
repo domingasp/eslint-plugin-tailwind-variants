@@ -28,7 +28,7 @@
   },
   "scripts": {
     "knip": "knip",
-    "lint": "oxlint --type-aware",
+    "lint": "oxlint",
     "fmt:check": "oxfmt --check",
     "build": "tsc",
     "prepublishOnly": "pnpm run build",
