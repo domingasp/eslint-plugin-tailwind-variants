@@ -20,7 +20,7 @@ export const MESSAGE_IDS = {
 /** @type {import("eslint").Rule.RuleModule} */
 export const rule = {
   create: (context) => {
-    const [options = {}] = /** @type {[RuleOptions]} */ context.options;
+    const [options = {}] = /** @type {[RuleOptions]} */ (context.options);
     const directoryPattern = options.directoryPattern ?? "/components/";
     const DEFAULT_MAX_INLINE_CLASSES = 5;
     const maxInlineClasses =
@@ -107,7 +107,6 @@ const detectArrayViolation = (expr, options) =>
  * Detect violations in binary and logical expressions by checking both operands.
  * @param {import("estree").BinaryExpression |
  *  import("estree").LogicalExpression |
- *  import("estree").LogicalExpression |
  *  import("vue-eslint-parser").AST.ESLintBinaryExpression |
  *  import("vue-eslint-parser").AST.ESLintLogicalExpression} expr
  * @param {ValidationOptions} options
@@ -131,6 +130,7 @@ const detectCallViolation = (expr, options) => {
       messageId: MESSAGE_IDS.noCnInClassName,
       node: options.node,
     });
+    // Nested cn() calls only count as a single violation
     return true;
   }
 
