@@ -54,8 +54,10 @@ export const configs = {
 export { plugin };
 
 /** @type {import("eslint").ESLint.Plugin & { configs: PluginConfigs }} */
-export default {
+const defaultExport = {
   configs,
   meta: plugin.meta,
   rules,
 };
+
+export default defaultExport;
