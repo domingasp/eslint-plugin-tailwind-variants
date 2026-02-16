@@ -63,7 +63,7 @@
     "eslint": ">9.0.0"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20.10"
   },
   "packageManager": "pnpm@10.29.3"
 }
