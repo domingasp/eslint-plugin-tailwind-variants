@@ -6,7 +6,8 @@
     "emitDeclarationOnly": true,
     "outDir": "dist",
     "resolveJsonModule": true,
-    "module": "esnext",
+    "module": "es2022",
+    "target": "es2024",
     "moduleResolution": "bundler"
   },
   "include": ["src"]

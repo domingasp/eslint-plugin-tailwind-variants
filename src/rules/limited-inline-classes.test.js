@@ -1,32 +1,31 @@
-// oxlint-disable oxc/no-rest-spread-properties
-import {
-  type InvalidTestCase,
-  type ValidTestCase,
-  RuleTester,
-} from "@typescript-eslint/rule-tester";
+import { RuleTester } from "eslint";
 import vueParser from "vue-eslint-parser";
 
-import {
-  type MessageIds,
-  type Options,
-  MESSAGE_IDS,
-  rule,
-} from "./limited-inline-classes.js";
+import { MESSAGE_IDS, rule } from "./limited-inline-classes.js";
 
-const tester = new RuleTester();
+const tester = new RuleTester({
+  languageOptions: {
+    parserOptions: {
+      ecmaFeatures: {
+        jsx: true,
+      },
+    },
+  },
+});
 
 const classes = {
   FIVE: "bg-red-500 text-white p-2 m-1 rounded",
   FOUR: "bg-red-500 text-white p-2 m-1",
   SINGLE: "bg-red-500",
   SIX: "bg-red-500 text-white p-2 m-1 rounded border",
-} as const;
+};
 
 const vueParserConfig = {
   languageOptions: { parser: vueParser },
 };
 
-const valid: ValidTestCase<Options>[] = [
+/** @type {import("eslint").RuleTester.ValidTestCase[]} */
+const valid = [
   // Vue: static class with acceptable number of classes
   {
     code: `<template><div class="${classes.FIVE}"></div></template>`,
@@ -154,7 +153,8 @@ const valid: ValidTestCase<Options>[] = [
   },
 ];
 
-const invalid: InvalidTestCase<MessageIds, Options>[] = [
+/** @type {import("eslint").RuleTester.InvalidTestCase[]} */
+const invalid = [
   // Vue: static class exceeding maxInlineClasses
   {
     code: `<template><div class="${classes.SIX}"></div></template>`,
