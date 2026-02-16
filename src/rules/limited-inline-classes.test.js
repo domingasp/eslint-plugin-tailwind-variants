@@ -1,33 +1,31 @@
-// oxlint-disable oxc/no-rest-spread-properties
-import {
-  type InvalidTestCase,
-  type ValidTestCase,
-  RuleTester,
-} from "@typescript-eslint/rule-tester";
+import { RuleTester } from "eslint";
 import vueParser from "vue-eslint-parser";
 
-import {
-  type MessageIds,
-  type Options,
-  MESSAGE_IDS,
-  rule,
-} from "./limited-inline-classes.js";
+import { MESSAGE_IDS, rule } from "./limited-inline-classes.js";
 
-const tester = new RuleTester();
+const tester = new RuleTester({
+  languageOptions: {
+    parserOptions: {
+      ecmaFeatures: {
+        jsx: true,
+      },
+    },
+  },
+});
 
 const classes = {
   FIVE: "bg-red-500 text-white p-2 m-1 rounded",
   FOUR: "bg-red-500 text-white p-2 m-1",
   SINGLE: "bg-red-500",
   SIX: "bg-red-500 text-white p-2 m-1 rounded border",
-} as const;
+};
 
 const vueParserConfig = {
   languageOptions: { parser: vueParser },
 };
 
-// #region Valid Test Cases
-const valid: ValidTestCase<Options>[] = [
+/** @type {import("eslint").RuleTester.ValidTestCase[]} */
+const valid = [
   // Vue: static class with acceptable number of classes
   {
     code: `<template><div class="${classes.FIVE}"></div></template>`,
@@ -83,44 +81,44 @@ const valid: ValidTestCase<Options>[] = [
   // JSX: static class with acceptable number of classes
   {
     code: `const element = <div className="${classes.FIVE}"></div>;`,
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: className with 5 classes",
   },
   {
     code: `const element = <div className="${classes.FOUR}"></div>;`,
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: className with 4 classes",
   },
   {
     code: `const element = <div className="${classes.SINGLE}"></div>;`,
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: className with 1 class",
   },
   {
     code: `const element = <div className=""></div>;`,
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: empty className",
   },
 
   // JSX: Dynamic className with acceptable number of classes
   {
     code: `const element = <div className={'${classes.FIVE}'}></div>;`,
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: className with 5 classes (string literal)",
   },
   {
     code: `const element = <div className={\`${classes.FIVE}\`}></div>;`,
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: className with 5 classes (template literal)",
   },
   {
     code: `const element = <div className={buttonVariants}></div>;`,
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: className variable reference",
   },
   {
     code: `const element = <div className={condition ? '${classes.FOUR}' : '${classes.SINGLE}'}></div>;`,
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: className with ternary (both sides <= 5 classes)",
   },
 
@@ -134,7 +132,7 @@ const valid: ValidTestCase<Options>[] = [
   },
   {
     code: `const element = <div className="${classes.FOUR}"></div>;`,
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: 4 classes allowed with custom maxInlineClasses",
     options: [{ maxInlineClasses: 4 }],
   },
@@ -149,15 +147,14 @@ const valid: ValidTestCase<Options>[] = [
   },
   {
     code: `const element = <div className="${classes.SIX}"></div>;`,
-    filename: "/utils/helpers.tsx",
+    filename: "/utils/helpers.jsx",
     name: "JSX: 6 classes allowed outside of directoryPattern",
     options: [{ directoryPattern: "/components/" }],
   },
 ];
-// #endregion Valid Test Cases
 
-// #region Invalid Test Cases
-const invalid: InvalidTestCase<MessageIds, Options>[] = [
+/** @type {import("eslint").RuleTester.InvalidTestCase[]} */
+const invalid = [
   // Vue: static class exceeding maxInlineClasses
   {
     code: `<template><div class="${classes.SIX}"></div></template>`,
@@ -194,7 +191,7 @@ const invalid: InvalidTestCase<MessageIds, Options>[] = [
   {
     code: `const element = <div className="${classes.SIX}"></div>;`,
     errors: [{ messageId: MESSAGE_IDS.limitedInlineClasses }],
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: className with 6 classes",
   },
 
@@ -202,19 +199,19 @@ const invalid: InvalidTestCase<MessageIds, Options>[] = [
   {
     code: `const element = <div className={'${classes.SIX}'}></div>;`,
     errors: [{ messageId: MESSAGE_IDS.limitedInlineClasses }],
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: className with 6 classes (string literal)",
   },
   {
     code: `const element = <div className={\`${classes.SIX}\`}></div>;`,
     errors: [{ messageId: MESSAGE_IDS.limitedInlineClasses }],
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: className with 6 classes (template literal)",
   },
   {
     code: `const element = <div className={condition ? '${classes.SIX}' : '${classes.SINGLE}'}></div>;`,
     errors: [{ messageId: MESSAGE_IDS.limitedInlineClasses }],
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: className with ternary with 6 classes on left side",
   },
 
@@ -236,19 +233,19 @@ const invalid: InvalidTestCase<MessageIds, Options>[] = [
   {
     code: `const element = <div className={cn('${classes.SINGLE}')}></div>;`,
     errors: [{ messageId: MESSAGE_IDS.noCnInClassName }],
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: cn() in className",
   },
   {
     code: `const element = <div className={cn('${classes.SINGLE}', cn('${classes.SINGLE}'))}></div>;`,
     errors: [{ messageId: MESSAGE_IDS.noCnInClassName }],
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: nested cn() in className",
   },
   {
     code: `const element = <div className={\`base \${cn('${classes.SINGLE}')}\`}></div>;`,
     errors: [{ messageId: MESSAGE_IDS.noCnInClassName }],
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: cn() in template literal",
   },
 
@@ -264,7 +261,6 @@ const invalid: InvalidTestCase<MessageIds, Options>[] = [
     ...vueParserConfig,
   },
 ];
-// #endregion Invalid Test Cases
 
 tester.run("limited-inline-classes", rule, {
   invalid,

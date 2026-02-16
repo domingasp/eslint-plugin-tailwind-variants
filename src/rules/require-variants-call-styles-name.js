@@ -1,41 +1,33 @@
-import { type TSESTree, ESLintUtils } from "@typescript-eslint/utils";
-import type {
-  RuleContext,
-  RuleFix,
-  SourceCode,
-} from "@typescript-eslint/utils/ts-eslint";
-
-const createRule = ESLintUtils.RuleCreator((name) => name);
-
 export const MESSAGE_IDS = {
   renameAllOccurrences: "renameAllOccurrences",
   requireVariantsCallStylesName: "requireVariantsCallStylesName",
-} as const;
-export type MessageIds = (typeof MESSAGE_IDS)[keyof typeof MESSAGE_IDS];
+};
 
-export type Options = [
-  {
-    /**
-     * Name required for variables assigned from tv().
-     * @default "styles"
-     */
-    name?: string;
-  },
-];
+/** @typedef {typeof MESSAGE_IDS[keyof typeof MESSAGE_IDS]} MessageIds */
 
-export const rule = createRule<Options, MessageIds>({
+/**
+ * @typedef {object} RuleOptions
+ * @property {string} [name="styles"] Name required for variables assigned from tv().
+ */
+
+/** @type {import("eslint").Rule.RuleModule} */
+export const rule = {
   create: (context) => {
-    const [options = {}] = context.options;
+    const [options = {}] = /** @type {[RuleOptions]} */ (context.options);
     const requiredName = options.name ?? "styles";
 
     // Tracks by name, not scope—shadowed identifiers may cause false positives
-    const variantFunctions = new Set<string>();
+    /** @type {Set<string>} */
+    const variantFunctions = new Set();
 
-    const trackVariantFunction = (
-      init: TSESTree.CallExpression,
-      id: TSESTree.Identifier,
-    ): boolean => {
-      if (isIdentifier(init.callee) && init.callee.name === "tv") {
+    /**
+     * Check if expression is a tv() call and track the variable name if so.
+     * @param {import("estree").CallExpression} init
+     * @param {import("estree").Identifier} id
+     * @returns {boolean} `true` if expression is a tv() call and variable name is tracked.
+     */
+    const trackVariantFunction = (init, id) => {
+      if (init.callee.type === "Identifier" && init.callee.name === "tv") {
         variantFunctions.add(id.name);
         return true;
       }
@@ -43,14 +35,14 @@ export const rule = createRule<Options, MessageIds>({
     };
 
     return {
-      VariableDeclarator(node): void {
+      VariableDeclarator(node) {
         const { id, init } = node;
 
         if (
           !init ||
-          !isCallExpression(init) ||
-          !isIdentifier(init.callee) ||
-          !isIdentifier(id)
+          init.type !== "CallExpression" ||
+          init.callee.type !== "Identifier" ||
+          id.type !== "Identifier"
         ) {
           return;
         }
@@ -70,15 +62,16 @@ export const rule = createRule<Options, MessageIds>({
       },
     };
   },
-  defaultOptions: [
-    {
-      name: "styles",
-    },
-  ],
+
   meta: {
+    defaultOptions: [
+      {
+        name: "styles",
+      },
+    ],
     docs: {
       description:
-        "Require variables assigned from calling a function returned by tv() to be named {{name}}.",
+        "Require variables assigned from calling a function returned by tv() to be named a specific name.",
     },
     hasSuggestions: true,
     messages: {
@@ -101,36 +94,24 @@ export const rule = createRule<Options, MessageIds>({
     ],
     type: "suggestion",
   },
-  name: "require-variants-call-styles-name",
-});
-
-type Context = Readonly<RuleContext<MessageIds, Options>>;
-
-const isCallExpression = (
-  init: TSESTree.Expression | null,
-): init is TSESTree.CallExpression => init?.type === "CallExpression";
-
-const isIdentifier = (
-  node: TSESTree.Node | null,
-): node is TSESTree.Identifier => node?.type === "Identifier";
+};
 
 /**
  * Collect all references to a variable declaration, excluding the initial
  * declaration.
- *
- * @param {object} options - Collection options.
- *
- * @returns {TSESTree.Identifier[]} Array of identifier nodes referencing the variable.
+ * @param {object} options
+ * @param {import("eslint").SourceCode} options.sourceCode ESLint SourceCode instance.
+ * @param {import("estree").VariableDeclarator} options.declaratorNode VariableDeclarator node of the declaration.
+ * @param {import("estree").Identifier} options.id Identifier node of the variable being declared.
+ * @returns {import("estree").Identifier[]} Array of identifier nodes referencing the variable.
  */
-const collectReferences = (options: {
-  sourceCode: Readonly<SourceCode>;
-  declaratorNode: TSESTree.VariableDeclarator;
-  id: TSESTree.Identifier;
-}): TSESTree.Identifier[] => {
+const collectReferences = (options) => {
   const declaredVariables = options.sourceCode.getDeclaredVariables(
     options.declaratorNode,
   );
-  const references: TSESTree.Identifier[] = [];
+
+  /** @type {import("estree").Identifier[]} */
+  const references = [];
 
   for (const variable of declaredVariables) {
     if (variable.name === options.id.name) {
@@ -152,15 +133,13 @@ const collectReferences = (options: {
 /**
  * Report incorrect variable name with autofix suggestion to rename all
  * occurrences.
- *
- * @param {object} options - Reporting options.
+ * @param {object} options
+ * @param {import("eslint").Rule.RuleContext} options.context
+ * @param {import("estree").Identifier} options.id Identifier node of the variable declaration.
+ * @param {import("estree").VariableDeclarator} options.declaratorNode
+ * @param {string} options.requiredName Required variable name.
  */
-const reportIncorrectName = (options: {
-  context: Context;
-  id: TSESTree.Identifier;
-  requiredName: string;
-  declaratorNode: TSESTree.VariableDeclarator;
-}): void => {
+const reportIncorrectName = (options) => {
   const { sourceCode } = options.context;
   const references = collectReferences({
     declaratorNode: options.declaratorNode,
@@ -179,7 +158,7 @@ const reportIncorrectName = (options: {
         data: {
           name: options.requiredName,
         },
-        fix: (fixer): RuleFix[] => {
+        fix: (fixer) => {
           const fixes = [fixer.replaceText(options.id, options.requiredName)];
 
           for (const reference of references) {
@@ -196,15 +175,13 @@ const reportIncorrectName = (options: {
 
 /**
  * Detect variant variable name violations and report if found.
- *
- * @param {object} options - Validation options.
+ * @param {object} options
+ * @param {import("eslint").Rule.RuleContext} options.context
+ * @param {import("estree").Identifier} options.id Identifier node of the variable declaration.
+ * @param {import("estree").VariableDeclarator} options.declaratorNode
+ * @param {string} options.requiredName Required variable name.
  */
-const detectVariantVariableNameViolation = (options: {
-  context: Context;
-  id: TSESTree.Identifier;
-  requiredName: string;
-  declaratorNode: TSESTree.VariableDeclarator;
-}): void => {
+const detectVariantVariableNameViolation = (options) => {
   const variableName = options.id.name;
 
   if (variableName !== options.requiredName) {

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "project": ["src/**/*.{js,ts}"],
+  "ignoreDependencies": [
+    "@commitlint/cli",
+    "eslint-plugin-jsdoc",
+    // Used for building as vue-eslint-parser depends on it, but not used
+    // in the source code.
+    "@types/eslint-scope",
+    "@typescript-eslint/utils"
+  ],
+  "tags": ["-lintignore"]
+}
