@@ -1,24 +1,15 @@
 import css from "@eslint/css";
-import {
-  type InvalidTestCase,
-  type ValidTestCase,
-  RuleTester,
-} from "@typescript-eslint/rule-tester";
+import { RuleTester } from "eslint";
 
-import {
-  type MessageIds,
-  type Options,
-  MESSAGE_IDS,
-  rule,
-} from "./sort-custom-properties";
+import { MESSAGE_IDS, rule } from "./sort-custom-properties";
 
 const tester = new RuleTester({
   language: "css/css",
   plugins: { css },
 });
 
-// #region Valid Test Cases
-const valid: ValidTestCase<Options>[] = [
+/** @type {import("eslint").RuleTester.ValidTestCase[]} */
+const valid = [
   {
     code: `
 			:root {
@@ -261,10 +252,9 @@ const valid: ValidTestCase<Options>[] = [
     name: "Empty block with braces",
   },
 ];
-// #endregion Valid Test Cases
 
-// #region Invalid Test Cases
-const invalid: InvalidTestCase<MessageIds, Options>[] = [
+/** @type {import("eslint").RuleTester.InvalidTestCase[]} */
+const invalid = [
   {
     code: `
 			:root {
@@ -761,7 +751,6 @@ const invalid: InvalidTestCase<MessageIds, Options>[] = [
     ],
   },
 ];
-// #endregion Invalid Test Cases
 
 tester.run("sort-custom-properties", rule, {
   invalid,

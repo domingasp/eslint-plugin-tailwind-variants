@@ -1,5 +1,4 @@
 import css from "@eslint/css";
-import type { ESLint, Linter } from "eslint";
 
 import {
   name as packageName,
@@ -8,21 +7,24 @@ import {
 
 import { rules } from "./rules/index.js";
 
-interface PluginConfigs {
-  recommended: Linter.Config[];
-}
-
 const pluginName = "tailwind-variants";
 
+/** @type {import("eslint").ESLint.Plugin} */
 const plugin = {
   meta: {
     name: packageName,
     version: packageVersion,
   },
   rules,
-} as ESLint.Plugin;
+};
 
-export const configs: PluginConfigs = {
+/**
+ * @typedef {object} PluginConfigs
+ * @property {import("eslint").Linter.Config[]} recommended Recommended ESLint configurations for this plugin.
+ */
+
+/** @type {PluginConfigs} */
+export const configs = {
   recommended: [
     {
       plugins: {
@@ -52,8 +54,9 @@ export const configs: PluginConfigs = {
 
 export { plugin };
 
+/** @type {import("eslint").ESLint.Plugin & { configs: PluginConfigs }} */
 export default {
   configs,
   meta: plugin.meta,
-  rules: plugin.rules,
-} as ESLint.Plugin & { configs: PluginConfigs };
+  rules,
+};

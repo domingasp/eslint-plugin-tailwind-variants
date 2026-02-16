@@ -1,20 +1,11 @@
-import {
-  type InvalidTestCase,
-  type ValidTestCase,
-  RuleTester,
-} from "@typescript-eslint/rule-tester";
+import { RuleTester } from "eslint";
 
-import {
-  type MessageIds,
-  type Options,
-  MESSAGE_IDS,
-  rule,
-} from "./require-variants-call-styles-name";
+import { MESSAGE_IDS, rule } from "./require-variants-call-styles-name";
 
 const tester = new RuleTester();
 
-// #region Valid Test Cases
-const valid: ValidTestCase<Options>[] = [
+/** @type {import("eslint").RuleTester.ValidTestCase[]} */
+const valid = [
   {
     code: `const buttonVariants = tv({})`,
     name: "Direct tv() call - no enforcement",
@@ -35,10 +26,9 @@ const valid: ValidTestCase<Options>[] = [
     options: [{ name: "variants" }],
   },
 ];
-// #endregion Valid Test Cases
 
-// #region Invalid Test Cases
-const invalid: InvalidTestCase<MessageIds, Options>[] = [
+/** @type {import("eslint").RuleTester.InvalidTestCase[]} */
+const invalid = [
   {
     code: `
       const buttonVariants = tv({});
@@ -108,7 +98,6 @@ const invalid: InvalidTestCase<MessageIds, Options>[] = [
     name: "Renames declaration and all references via suggestion",
   },
 ];
-// #endregion Invalid Test Cases
 
 tester.run("require-variants-call-styles-name", rule, {
   invalid,
