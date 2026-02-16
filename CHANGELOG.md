@@ -1,3 +1,9 @@
+## [2.1.0](https://github.com/domingasp/eslint-plugin-tailwind-variants/compare/v2.0.3...v2.1.0) (2026-02-16)
+
+### Features
+
+* require-variants-suffix rename all occurences ([66a22d9](https://github.com/domingasp/eslint-plugin-tailwind-variants/commit/66a22d95ef3f45360d1ebd1ac1d22e6491144ea1))
+
 ## [2.0.3](https://github.com/domingasp/eslint-plugin-tailwind-variants/compare/v2.0.2...v2.0.3) (2026-01-06)
 
 ### Bug Fixes
