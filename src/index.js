@@ -1,11 +1,10 @@
 import css from "@eslint/css";
 
-import {
-  name as packageName,
-  version as packageVersion,
-} from "../package.json";
+import pkg from "../package.json" with { type: "json" };
 
 import { rules } from "./rules/index.js";
+
+const { name: packageName, version: packageVersion } = pkg;
 
 const pluginName = "tailwind-variants";
 
