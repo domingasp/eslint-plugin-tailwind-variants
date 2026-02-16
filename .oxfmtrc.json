@@ -11,5 +11,13 @@
       ["sibling", "type-sibling"],
       ["index", "type-index"]
     ]
-  }
+  },
+  "overrides": [
+    {
+      "files": ["*.jsonc"],
+      "options": {
+        "trailingComma": "none"
+      }
+    }
+  ]
 }

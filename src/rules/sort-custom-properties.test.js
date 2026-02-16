@@ -1,4 +1,3 @@
-// oxlint-disable max-lines
 import css from "@eslint/css";
 import { RuleTester } from "eslint";
 

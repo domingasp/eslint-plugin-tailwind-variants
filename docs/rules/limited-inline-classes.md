@@ -85,7 +85,7 @@ Only files matching the directory pattern will be checked by this rule.
 <eslint-code-block :rules="{'tailwind-variants/limited-inline-classes': ['error', { directoryPattern: '/src/' }]}">
 
 ```jsx
-// File: /src/components/Button.tsx
+// File: /src/components/Button.jsx
 /* ✗ BAD - Rule applies in /src/ directory */
 const Button = () => (
   <div className="bg-red-500 text-white p-2 m-1 rounded border"></div>
@@ -97,7 +97,7 @@ const Button = () => (
 <eslint-code-block :rules="{'tailwind-variants/limited-inline-classes': ['error', { directoryPattern: '/src/' }]}">
 
 ```jsx
-// File: /utils/helper.tsx
+// File: /utils/helper.jsx
 /* ✓ GOOD - Rule does not apply outside /src/ directory */
 const Helper = () => (
   <div className="bg-red-500 text-white p-2 m-1 rounded border"></div>
@@ -141,5 +141,5 @@ This rule was introduced in eslint-plugin-tailwind-variants v0.1.0
 
 ## :mag: Implementation
 
-- [Rule source](https://github.com/domingasp/eslint-plugin-tailwind-variants/blob/main/src/rules/limited-inline-classes.ts)
-- [Test source](https://github.com/domingasp/eslint-plugin-tailwind-variants/blob/main/src/rules/limited-inline-classes.test.ts)
+- [Rule source](https://github.com/domingasp/eslint-plugin-tailwind-variants/blob/main/src/rules/limited-inline-classes.js)
+- [Test source](https://github.com/domingasp/eslint-plugin-tailwind-variants/blob/main/src/rules/limited-inline-classes.test.js)
