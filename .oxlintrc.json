@@ -34,7 +34,7 @@
   },
   "overrides": [
     {
-      "files": ["**/rules/*.ts"],
+      "files": ["**/rules/*.js"],
       "rules": {
         "max-lines": "off"
       }

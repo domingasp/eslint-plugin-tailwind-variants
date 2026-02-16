@@ -1,4 +1,3 @@
-// oxlint-disable max-lines
 /**
  * @typedef {object} CustomProperty
  * @property {import("estree").Node} node AST node of the custom property declaration.

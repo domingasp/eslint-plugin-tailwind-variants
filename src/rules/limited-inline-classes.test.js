@@ -81,44 +81,44 @@ const valid = [
   // JSX: static class with acceptable number of classes
   {
     code: `const element = <div className="${classes.FIVE}"></div>;`,
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: className with 5 classes",
   },
   {
     code: `const element = <div className="${classes.FOUR}"></div>;`,
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: className with 4 classes",
   },
   {
     code: `const element = <div className="${classes.SINGLE}"></div>;`,
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: className with 1 class",
   },
   {
     code: `const element = <div className=""></div>;`,
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: empty className",
   },
 
   // JSX: Dynamic className with acceptable number of classes
   {
     code: `const element = <div className={'${classes.FIVE}'}></div>;`,
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: className with 5 classes (string literal)",
   },
   {
     code: `const element = <div className={\`${classes.FIVE}\`}></div>;`,
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: className with 5 classes (template literal)",
   },
   {
     code: `const element = <div className={buttonVariants}></div>;`,
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: className variable reference",
   },
   {
     code: `const element = <div className={condition ? '${classes.FOUR}' : '${classes.SINGLE}'}></div>;`,
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: className with ternary (both sides <= 5 classes)",
   },
 
@@ -132,7 +132,7 @@ const valid = [
   },
   {
     code: `const element = <div className="${classes.FOUR}"></div>;`,
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: 4 classes allowed with custom maxInlineClasses",
     options: [{ maxInlineClasses: 4 }],
   },
@@ -147,7 +147,7 @@ const valid = [
   },
   {
     code: `const element = <div className="${classes.SIX}"></div>;`,
-    filename: "/utils/helpers.tsx",
+    filename: "/utils/helpers.jsx",
     name: "JSX: 6 classes allowed outside of directoryPattern",
     options: [{ directoryPattern: "/components/" }],
   },
@@ -191,7 +191,7 @@ const invalid = [
   {
     code: `const element = <div className="${classes.SIX}"></div>;`,
     errors: [{ messageId: MESSAGE_IDS.limitedInlineClasses }],
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: className with 6 classes",
   },
 
@@ -199,19 +199,19 @@ const invalid = [
   {
     code: `const element = <div className={'${classes.SIX}'}></div>;`,
     errors: [{ messageId: MESSAGE_IDS.limitedInlineClasses }],
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: className with 6 classes (string literal)",
   },
   {
     code: `const element = <div className={\`${classes.SIX}\`}></div>;`,
     errors: [{ messageId: MESSAGE_IDS.limitedInlineClasses }],
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: className with 6 classes (template literal)",
   },
   {
     code: `const element = <div className={condition ? '${classes.SIX}' : '${classes.SINGLE}'}></div>;`,
     errors: [{ messageId: MESSAGE_IDS.limitedInlineClasses }],
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: className with ternary with 6 classes on left side",
   },
 
@@ -233,19 +233,19 @@ const invalid = [
   {
     code: `const element = <div className={cn('${classes.SINGLE}')}></div>;`,
     errors: [{ messageId: MESSAGE_IDS.noCnInClassName }],
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: cn() in className",
   },
   {
     code: `const element = <div className={cn('${classes.SINGLE}', cn('${classes.SINGLE}'))}></div>;`,
     errors: [{ messageId: MESSAGE_IDS.noCnInClassName }],
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: nested cn() in className",
   },
   {
     code: `const element = <div className={\`base \${cn('${classes.SINGLE}')}\`}></div>;`,
     errors: [{ messageId: MESSAGE_IDS.noCnInClassName }],
-    filename: "/components/Button.tsx",
+    filename: "/components/Button.jsx",
     name: "JSX: cn() in template literal",
   },
 

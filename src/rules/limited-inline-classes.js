@@ -1,4 +1,3 @@
-// oxlint-disable max-lines
 import { createRuleVisitors } from "../utils/create-rule-visitors";
 import {
   getBindClassExpression,
