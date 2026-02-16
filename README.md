@@ -42,11 +42,13 @@ npm i -D vue-eslint-parser
 
 ```js
 // eslint.config.{js|ts)
-
-// ...
 import tailwindVariants from "eslint-plugin-tailwind-variants";
 
-export default defineConfig([...tailwindVariants.configs.recommended]);
+export default defineConfig([
+  {
+    extends: [tailwindVariants.configs.recommended],
+  },
+]);
 ```
 
 ### Editor setup
