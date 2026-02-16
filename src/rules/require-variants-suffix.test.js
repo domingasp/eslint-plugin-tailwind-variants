@@ -4,6 +4,7 @@ import { MESSAGE_IDS, rule } from "./require-variants-suffix";
 
 const tester = new RuleTester();
 
+/** @type {import("eslint").RuleTester.ValidTestCase[]} */
 const valid = [
   {
     code: `const buttonVariants = tv({})`,
@@ -16,19 +17,61 @@ const valid = [
   },
 ];
 
+/** @type {import("eslint").RuleTester.InvalidTestCase[]} */
 const invalid = [
   {
     code: `const button = tv({})`,
-    errors: [{ messageId: MESSAGE_IDS.requireVariantsSuffix }],
+    errors: [
+      {
+        messageId: MESSAGE_IDS.requireVariantsSuffix,
+        suggestions: [
+          {
+            messageId: MESSAGE_IDS.renameAllOccurrences,
+            output: `const buttonVariants = tv({})`,
+          },
+        ],
+      },
+    ],
     name: "Variable does not end with 'Variants' suffix (default)",
-    output: `const buttonVariants = tv({})`,
   },
   {
     code: `const button = tv({})`,
-    errors: [{ messageId: MESSAGE_IDS.requireVariantsSuffix }],
+    errors: [
+      {
+        messageId: MESSAGE_IDS.requireVariantsSuffix,
+        suggestions: [
+          {
+            messageId: MESSAGE_IDS.renameAllOccurrences,
+            output: `const buttonStyles = tv({})`,
+          },
+        ],
+      },
+    ],
     name: "Variable does not end with custom 'Styles' suffix",
     options: [{ suffix: "Styles" }],
-    output: `const buttonStyles = tv({})`,
+  },
+  {
+    code: `
+      const button = tv({});
+      console.log(button);
+      const result = button;
+    `,
+    errors: [
+      {
+        messageId: MESSAGE_IDS.requireVariantsSuffix,
+        suggestions: [
+          {
+            messageId: MESSAGE_IDS.renameAllOccurrences,
+            output: `
+      const buttonVariants = tv({});
+      console.log(buttonVariants);
+      const result = buttonVariants;
+    `,
+          },
+        ],
+      },
+    ],
+    name: "Renames declaration and all references via suggestion",
   },
 ];
 
