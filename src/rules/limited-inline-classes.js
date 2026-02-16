@@ -13,7 +13,7 @@ export const MESSAGE_IDS = {
 /** @typedef {typeof MESSAGE_IDS[keyof typeof MESSAGE_IDS]} MessageIds */
 
 /**
- * @typedef {Object} RuleOptions
+ * @typedef {object} RuleOptions
  * @property {string} [directoryPattern="/components/"] Directory pattern to match for processing files.
  * @property {number} [maxInlineClasses=5] Maximum number of inline classes allowed.
  */

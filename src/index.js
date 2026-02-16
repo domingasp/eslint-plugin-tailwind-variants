@@ -19,7 +19,7 @@ const plugin = {
 };
 
 /**
- * @typedef {Object} PluginConfigs
+ * @typedef {object} PluginConfigs
  * @property {import("eslint").Linter.Config[]} recommended Recommended ESLint configurations for this plugin.
  */
 

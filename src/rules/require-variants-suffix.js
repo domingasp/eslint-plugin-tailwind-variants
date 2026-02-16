@@ -5,7 +5,7 @@ export const MESSAGE_IDS = {
 /** @typedef {typeof MESSAGE_IDS[keyof typeof MESSAGE_IDS]} MessageIds */
 
 /**
- * @typedef {Object} RuleOptions
+ * @typedef {object} RuleOptions
  * @property {string} [suffix="Variants"] Suffix required for variables assigned from tv().
  */
 
