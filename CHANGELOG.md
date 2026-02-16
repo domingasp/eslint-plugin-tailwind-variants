@@ -1,3 +1,9 @@
+## [2.1.2](https://github.com/domingasp/eslint-plugin-tailwind-variants/compare/v2.1.1...v2.1.2) (2026-02-16)
+
+### Bug Fixes
+
+* broken default type in use ([fe388d6](https://github.com/domingasp/eslint-plugin-tailwind-variants/commit/fe388d680be90690929fe08e98ab3652bf996246))
+
 ## [2.1.1](https://github.com/domingasp/eslint-plugin-tailwind-variants/compare/v2.1.0...v2.1.1) (2026-02-16)
 
 ### Bug Fixes
