@@ -4,7 +4,7 @@
 
 ## Configure
 
-> TODO(domingasp) add a simple script?
+> TODO(overpolish) add a simple script?
 
 Search and replace the following with your project details:
 
