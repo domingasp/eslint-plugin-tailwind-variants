@@ -9,10 +9,10 @@
     "tailwind-variants"
   ],
   "license": "MIT",
-  "author": "madebydomdev",
+  "author": "overpolish",
   "repository": {
     "type": "git",
-    "url": "https://github.com/domingasp/eslint-plugin-tailwind-variants.git"
+    "url": "git+https://github.com/overpolish/eslint-plugin-tailwind-variants.git"
   },
   "files": [
     "src",

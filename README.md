@@ -5,7 +5,7 @@
 <h1 align="center">eslint-plugin-tailwind-variants</h1>
 
 <div align="center">
-	<img alt="GitHub License" src="https://img.shields.io/github/license/domingasp/eslint-plugin-tailwind-variants?color=615fff" />
+	<img alt="GitHub License" src="https://img.shields.io/github/license/overpolish/eslint-plugin-tailwind-variants?color=615fff" />
 	<img alt="NPM Version" src="https://img.shields.io/npm/v/eslint-plugin-tailwind-variants?color=615fff" />
 	<img alt="NPM Monthly Downloads" src="https://img.shields.io/npm/dm/eslint-plugin-tailwind-variants?color=615fff" />
 </div>
