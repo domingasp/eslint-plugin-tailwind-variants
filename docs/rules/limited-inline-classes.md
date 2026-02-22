@@ -141,5 +141,5 @@ This rule was introduced in eslint-plugin-tailwind-variants v0.1.0
 
 ## :mag: Implementation
 
-- [Rule source](https://github.com/domingasp/eslint-plugin-tailwind-variants/blob/main/src/rules/limited-inline-classes.js)
-- [Test source](https://github.com/domingasp/eslint-plugin-tailwind-variants/blob/main/src/rules/limited-inline-classes.test.js)
+- [Rule source](https://github.com/overpolish/eslint-plugin-tailwind-variants/blob/main/src/rules/limited-inline-classes.js)
+- [Test source](https://github.com/overpolish/eslint-plugin-tailwind-variants/blob/main/src/rules/limited-inline-classes.test.js)
