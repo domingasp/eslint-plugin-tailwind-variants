@@ -1,3 +1,9 @@
+## [2.1.4](https://github.com/overpolish/eslint-plugin-tailwind-variants/compare/v2.1.3...v2.1.4) (2026-02-22)
+
+### Bug Fixes
+
+* old repository url ([ce35546](https://github.com/overpolish/eslint-plugin-tailwind-variants/commit/ce35546586ea4dc08ce0b2c172d2f62e88a2d4e2))
+
 ## [2.1.3](https://github.com/overpolish/eslint-plugin-tailwind-variants/compare/v2.1.2...v2.1.3) (2026-02-16)
 
 ### Bug Fixes
