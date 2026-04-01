@@ -38,7 +38,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@eslint/css": "^0.14.1"
+    "@eslint/css": "^1.1.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.4.1",
